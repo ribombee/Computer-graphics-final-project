@@ -1,5 +1,6 @@
 package com.ru.tgra.lab1.desktop;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.ru.tgra.shapes.Maze3D;
@@ -13,7 +14,6 @@ public class DesktopLauncher {
 		config.height = 748;  //the window size
 		config.x = 150;
 		config.y = 50;
-
 		new LwjglApplication(new Maze3D(), config);
 	}
 }

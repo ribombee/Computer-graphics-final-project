@@ -10,9 +10,18 @@ uniform mat4 u_modelMatrix;
 uniform mat4 u_viewMatrix;
 uniform mat4 u_projectionMatrix;
 
-uniform vec4 u_color;
+uniform vec4 u_eyePosition;
 
-varying vec4 v_color;
+uniform vec4 u_lightPosition;
+uniform vec4 u_lightDiffuse;
+uniform vec4 u_lightSpecular;
+
+uniform vec4 u_materialDiffuse;
+uniform vec4 u_materialSpecular;
+uniform float u_materialShine;
+
+varying vec4 v_diffuse;
+varying vec4 v_specular;
 
 void main()
 {
@@ -24,8 +33,17 @@ void main()
 
 	position = u_viewMatrix * position;
 	normal = u_viewMatrix * normal;
-
-	v_color = (dot(normal, vec4(0,0,1,0)) / length(normal)) * u_color;
+	
+	vec4 s = u_lightPosition - position;
+	vec4 v = u_eyePosition - position;
+	
+	vec4 h = s + v;
+	
+	float lambert = max(0, (dot(normal, s) / (length(normal)*length(s))));
+	v_diffuse = lambert * u_lightDiffuse * u_materialDiffuse;
+	
+	float phong = max(0, (dot(normal, h) / (length(normal)*length(h))));
+	v_specular = pow(phong, u_materialShine) * u_lightSpecular * u_materialSpecular;
 
 	gl_Position = u_projectionMatrix * position;
 }

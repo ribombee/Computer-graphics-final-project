@@ -1,40 +1,31 @@
 package com.ru.tgra.shapes;
 
+import java.nio.FloatBuffer;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.BufferUtils;
 
 public class Camera {
-	private Point3D eye;
-	private Vector3D u;
-	private Vector3D v;
-	private Vector3D n;
-			
+	public Point3D eye;
+	public Vector3D u;
+	public Vector3D v;
+	public Vector3D n;
+	
+	float left, right, bottom, top, near, far;
+		
+	boolean orthographic;
+	
+	FloatBuffer matrixBuffer;
 	public Camera() {
+		
+		matrixBuffer = BufferUtils.newFloatBuffer(16);
 		
 		u = new Vector3D(1, 0, 0);
 		v = new Vector3D(0, 1, 0);
 		n = new Vector3D(0, 0, 1);
-		
-		eye = new Point3D(1.0f, 1.0f, 1.0f);
+		eye = new Point3D(0f, 0f, 0f);
 				
-		LookAt(new Point3D(1.0f, 1.0f, 1.0f), new Vector3D(0.0f, 1.0f, 0.0f));
-	}
-	
-	public void setShaderMatrix() {
-		Vector3D minusEye = new Vector3D(-eye.x, -eye.y, -eye.z);
-		
-		float[] pm = new float[16];
-
-		pm[0] = u.x; pm[4] = u.y; pm[8] = u.z; pm[12] = minusEye.dot(u);
-		pm[1] = v.x; pm[5] = v.y; pm[9] = v.z; pm[13] = minusEye.dot(v);
-		pm[2] = n.x; pm[6] = n.y; pm[10] = n.z; pm[14] = minusEye.dot(n);
-		pm[3] = 0.0f; pm[7] = 0.0f; pm[11] = 0.0f; pm[15] = 1.0f;
-		
-		Maze3D.matrixBuffer = BufferUtils.newFloatBuffer(16);
-		Maze3D.matrixBuffer.put(pm);
-		Maze3D.matrixBuffer.rewind();
-		Gdx.gl.glUniformMatrix4fv(Maze3D.viewMatrixLoc, 1, false, Maze3D.matrixBuffer);
-		
+		LookAt(new Point3D(0f, 0f, 1.0f), new Vector3D(0.0f, 1.0f, 0.0f));
 	}
 	
 	public void LookAt( Point3D center, Vector3D up) {
@@ -97,6 +88,70 @@ public class Camera {
 		eye.x += delX*u.x + delY*v.x + delZ*n.x;
 		eye.y += delX*u.y + delY*v.y + delZ*n.y;
 		eye.z += delX*u.z + delY*v.z + delZ*n.z;
-	}	
+	}
+	
+	public void OrthographicProjection3D(float left, float right, float bottom, float top, float near, float far) {
+		this.left = left;
+		this.right = right;
+		this.bottom = bottom;
+		this.top = top;
+		this.near = near;
+		this.far = far;
+		
+		orthographic = true;
+	}
+
+	public void PerspctiveProjection3D(float fov, float ratio, float near, float far) {
+		this.top = near * (float)Math.tan(((double)fov/2.0)* Math.PI/180.0);
+		this.bottom = -top;
+		this.right = ratio*top;
+		this.left = -right;
+		this.near = near;
+		this.far = far;
+		
+		orthographic = false;
+	}
+	
+	public FloatBuffer getViewMatrix() {
+		float[] pm = new float[16];
+		
+		Vector3D minusEye = new Vector3D(-eye.x, -eye.y, -eye.z);
+
+		pm[0] = u.x; pm[4] = u.y; pm[8] = u.z; pm[12] = minusEye.dot(u);
+		pm[1] = v.x; pm[5] = v.y; pm[9] = v.z; pm[13] = minusEye.dot(v);
+		pm[2] = n.x; pm[6] = n.y; pm[10] = n.z; pm[14] = minusEye.dot(n);
+		pm[3] = 0.0f; pm[7] = 0.0f; pm[11] = 0.0f; pm[15] = 1.0f;
+		
+		matrixBuffer = BufferUtils.newFloatBuffer(16);
+		matrixBuffer.put(pm);
+		matrixBuffer.rewind();
+		
+		return matrixBuffer;
+	}
+	
+	public FloatBuffer getProjectionMatrix() {
+		float[] pm = new float[16];
+		
+		if(orthographic)
+		{
+			pm[0] = 2.0f / (right - left); pm[4] = 0.0f; pm[8] = 0.0f; pm[12] = -(right + left) / (right - left);
+			pm[1] = 0.0f; pm[5] = 2.0f / (top - bottom); pm[9] = 0.0f; pm[13] = -(top + bottom) / (top - bottom);
+			pm[2] = 0.0f; pm[6] = 0.0f; pm[10] = 2.0f / (near - far); pm[14] = (near + far) / (near - far);
+			pm[3] = 0.0f; pm[7] = 0.0f; pm[11] = 0.0f; pm[15] = 1.0f;
+		}
+		else
+		{
+			pm[0] = (2.0f*near)/(right - left); pm[4] = 0.0f; pm[8] = (right + left)/(right - left); pm[12] = 0.0f;
+			pm[1] = 0.0f; pm[5] = (2.0f*near)/(top - bottom); pm[9] = (top + bottom)/(top - bottom); pm[13] = 0.0f;
+			pm[2] = 0.0f; pm[6] = 0.0f; pm[10] = -(far + near)/(far - near); pm[14] =  -(2.0f*far*near)/(far - near);
+			pm[3] = 0.0f; pm[7] = 0.0f; pm[11] = -1.0f; pm[15] = 0.0f;
+		}
+		
+		matrixBuffer = BufferUtils.newFloatBuffer(16);
+		matrixBuffer.put(pm);
+		matrixBuffer.rewind();
+		
+		return matrixBuffer;
+	}
 	
 }

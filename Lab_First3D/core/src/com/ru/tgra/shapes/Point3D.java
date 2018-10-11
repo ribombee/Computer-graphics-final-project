@@ -26,4 +26,14 @@ public class Point3D {
 		y += v.y;
 		z += v.z;
 	}
+	
+	public Point3D added(Vector3D v2)
+	{
+		Point3D added = new Point3D(x,y,z);
+		added.x += v2.x;
+		added.y += v2.y;
+		added.z += v2.z;
+		
+		return added;
+	}
 }
