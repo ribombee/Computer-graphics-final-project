@@ -56,6 +56,18 @@ public class Camera {
 		n.set(t.x * s + n.x * c, t.y * s + n.y *c, t.z * s + n.z * c);
 	}
 	
+	public void globalYaw(float angle) {
+		float radians = angle * (float)Math.PI / 180.0f;
+		
+		float c = (float)Math.cos(radians);
+		float s = -(float)Math.sin(radians);
+		
+		Vector3D t = new Vector3D(u.x, u.y, u.z);
+		
+		u.set(t.x * c, t.y * c, t.z * c - s);
+		n.set(t.x * s , t.y * s , t.z * s + c);
+	}
+	
 	public void pitch(float angle) {
 		float radians = angle * (float)Math.PI / 180.0f;
 		float c = (float)Math.cos(radians);
@@ -83,7 +95,7 @@ public class Camera {
 		float delZ = direction.z;
 		
 		eye.x += delX*u.x + delY*v.x + delZ*n.x;
-		 //eye.y += delX*u.y + delY*v.y + delZ*n.y;
+		eye.y += delX*u.y + delY*v.y + delZ*n.y;
 		eye.z += delX*u.z + delY*v.z + delZ*n.z;
 	}	
 	

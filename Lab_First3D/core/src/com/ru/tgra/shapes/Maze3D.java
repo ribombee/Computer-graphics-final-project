@@ -8,6 +8,8 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.badlogic.gdx.utils.BufferUtils;
 
@@ -31,6 +33,9 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 	private Player firstPersonPlayer;
 	
 	private boolean wDown, aDown, sDown, dDown;
+	
+	private MazeWall plane;
+	private List<MazeWall> walls; 
 
 	@Override
 	public void create () {
@@ -110,8 +115,11 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		
 		firstPersonPlayer = new Player();
 		
-		firstPersonPlayer.playerCamera.translate(new Vector3D(20.5f, 10.2f, 20.0f));
+		plane = new MazeWall(new Point3D(0,0,0), 100, 0.2f, 100);
+		walls = new ArrayList<MazeWall>();
+		
 		firstPersonPlayer.playerCamera.LookAt(new Point3D(0,0,0), new Vector3D(0,1,0));
+		firstPersonPlayer.playerCamera.translate(new Vector3D(20.5f, 10.2f, 20.0f));
 		
 	}
 
@@ -156,8 +164,17 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		playerMovement.normalize();
 		firstPersonPlayer.move(playerMovement);
 		
-		firstPersonPlayer.playerCamera.yaw(Gdx.input.getDeltaX());
-		firstPersonPlayer.playerCamera.pitch(Gdx.input.getDeltaY());
+		float x = Gdx.input.getDeltaX();
+		float y = Gdx.input.getDeltaY();
+		float ratioXY = 0;
+		
+		if(y != 0) {
+			ratioXY = x/y;
+		}
+		
+		firstPersonPlayer.playerCamera.pitch(y * 0.2f);
+		firstPersonPlayer.playerCamera.yaw(x * 0.2f);
+		
 
 		//angle += 180.0f * deltaTime;
 
@@ -189,6 +206,8 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		ModelMatrix.main.setShaderMatrix();
 		BoxGraphic.drawSolidCube();
 		ModelMatrix.main.popMatrix();
+		
+		plane.render();
 		
 		firstPersonPlayer.playerCamera.setShaderMatrix();
 	}
