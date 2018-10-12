@@ -30,13 +30,14 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		Gdx.input.setInputProcessor(this);
 		shader = new Shader();
 		
-		lightSource = new Point3D(0,2,0);
+		lightSource = new Point3D(1,15,0);
 		shader.setLightSource(lightSource.x, lightSource.y, lightSource.z);
 		shader.setLightDiffuse(0.9f, 0.7f, 0.2f, 1);
+		shader.setLightRange(20f);
 		shader.setMaterialDiffuse(0.7f, 0.2f, 0, 1);
 		shader.setLightSpecular(0.7f, 0.2f, 0, 1);
 		shader.setMaterialSpecular(0.7f, 0.2f, 0, 1);
-		shader.setMaterialShine(20);
+		shader.setMaterialShine(13);
 		
 		int vertexPointer = shader.getVertexPointer();
 		int normalPointer = shader.getNormalPointer();
@@ -54,7 +55,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 
 		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 
-		firstPersonPlayer = new Player();
+		firstPersonPlayer = new Player(3,3,3);
 		firstPersonPlayer.playerCamera.PerspctiveProjection3D(80, 1, 1, 60);
 		
 		plane = new MazeWall(new Point3D(0,0,0), 20, 0.2f, 20);
@@ -63,10 +64,11 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		{
 
 			walls.add(new MazeWall(new Point3D(5*i, 2 ,0), 0.2f, 2, 2));	
+			walls.add(new MazeWall(new Point3D(0, 2 ,5*i), 2, 2, 0.2f));	
 		}
 		
 		//firstPersonPlayer.playerCamera.LookAt(new Point3D(0,0,1), new Vector3D(0,0,1));
-		firstPersonPlayer.playerCamera.translate(new Vector3D(2f, 3, 10f));
+		firstPersonPlayer.move(new Vector3D(2f, 3, 10f), walls);
 		
 		//game.start();
 		
@@ -129,7 +131,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 			firstPersonPlayer.playerCamera.roll(-0.4f);
 		}
 		playerMovement.normalize();
-		firstPersonPlayer.move(playerMovement);
+		firstPersonPlayer.move(playerMovement, walls);
 		
 		float x = Gdx.input.getDeltaX();
 		float y = Gdx.input.getDeltaY();
@@ -165,7 +167,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		}
 		
 		ModelMatrix.main.pushMatrix();
-		ModelMatrix.main.addTranslation(lightSource.x, lightSource.y, lightSource.z);
+		ModelMatrix.main.addTranslation(lightSource.x, lightSource.y + 7, lightSource.z);
 		ModelMatrix.main.addScale(2,2,2);
 		shader.setModelMatrix(ModelMatrix.main.matrix);
 		SphereGraphic.drawSolidSphere();

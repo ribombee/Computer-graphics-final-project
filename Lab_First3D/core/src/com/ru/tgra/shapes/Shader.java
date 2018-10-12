@@ -22,6 +22,7 @@ public class Shader {
 	private int lightSourceLoc;
 	private int lightDiffuseLoc;
 	private int lightSpecularLoc;
+	private int lightRangeLoc;
 	private int materialDiffuseLoc;
 	private int materialSpecularLoc;
 	private int materialShineLoc;
@@ -62,6 +63,7 @@ public class Shader {
 
 		lightSourceLoc			= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_lightPosition");
 		lightDiffuseLoc			= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_lightDiffuse");
+		lightRangeLoc		= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_lightRange");
 		materialDiffuseLoc		= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_materialDiffuse");
 		lightSpecularLoc		= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_lightSpecular");
 		materialSpecularLoc		= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_materialSpecular");
@@ -105,6 +107,10 @@ public class Shader {
 		Gdx.gl.glUniform1f(materialShineLoc, val);
 	}
 	
+	public void setLightRange(float val)
+	{
+		Gdx.gl.glUniform1f(lightRangeLoc, val);
+	}
 	
 	public int getVertexPointer()
 	{
