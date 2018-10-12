@@ -79,15 +79,26 @@ public class Camera {
 		v.set(t.x * s + v.x * c, t.y * s + v.y *c, t.z * s + v.z * c);
 	}
 	
-	public void translate(Vector3D direction ) {
+	public void translate(Vector3D translatedDirection ) {
+		
+		eye.x += translatedDirection.x;
+		eye.y += translatedDirection.y;
+		eye.z += translatedDirection.z;
+	}
+	
+	public Vector3D GetTranslationVector(Vector3D direction) {
+		
+		Vector3D translationVector = new Vector3D(0,0,0);
 		
 		float delX = direction.x;
 		float delY = direction.y;
 		float delZ = direction.z;
 		
-		eye.x += delX*u.x + delY*v.x + delZ*n.x;
-		eye.y += delX*u.y + delY*v.y + delZ*n.y;
-		eye.z += delX*u.z + delY*v.z + delZ*n.z;
+		translationVector.x = delX*u.x + delY*v.x + delZ*n.x;
+		translationVector.y = delX*u.y + delY*v.y + delZ*n.y;
+		translationVector.z = delX*u.z + delY*v.z + delZ*n.z;
+		
+		return translationVector;
 	}
 	
 	public void OrthographicProjection3D(float left, float right, float bottom, float top, float near, float far) {

@@ -132,17 +132,6 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		}
 		playerMovement.normalize();
 		firstPersonPlayer.move(playerMovement, walls);
-		
-		float x = Gdx.input.getDeltaX();
-		float y = Gdx.input.getDeltaY();
-		float ratioXY = 0;
-		
-		if(y != 0) {
-			ratioXY = x/y;
-		}
-		
-		//firstPersonPlayer.playerCamera.pitch(y * 0.2f);
-		//firstPersonPlayer.playerCamera.yaw(x * 0.2f);
 
 		//angle += 180.0f * deltaTime;
 

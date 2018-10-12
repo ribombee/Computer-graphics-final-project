@@ -22,14 +22,13 @@ public class Player {
 	
 	public void move(Vector3D speed, List<MazeWall> cubeObjects) {
 		speed.scale(maxSpeed);
+		speed = playerCamera.GetTranslationVector(speed);
 		speed = collides(speed, cubeObjects);
 		playerCamera.translate(speed);
 	}
 	
 	private Vector3D collides(Vector3D speed, List<MazeWall> cubeObjects) {
-		
-		//System.out.println("Eye: " + playerCamera.eye.x + ", " + playerCamera.eye.y + ", " + playerCamera.eye.z);
-		
+				
 		for(MazeWall cube : cubeObjects) {
 			boolean inXRange = false;
 			boolean inYRange = false;
@@ -49,42 +48,51 @@ public class Player {
 				inZRange = true;
 			}
 			
-			if(inXRange && inYRange && inZRange) {
+			if(inXRange && inZRange && inYRange) {
 				
-				if(speed.x > 0 && cube.position.x - cube.width/2 - (position.x +width/2) < speed.x) {
-					speed.x = cube.position.x - cube.width/2 - (position.x +width/2);
-					
-					System.out.println("ADJUSTED X SPEED TO: " + speed.x);
-				}
-				else if(speed.x < 0 && position.x +width/2 - (cube.position.x - cube.width/2) > speed.x){
-					speed.x =  position.x +width/2 - (cube.position.x - cube.width/2);
-					
-					System.out.println("ADJUSTED X SPEED TO: " + speed.x);
-				}
+				float xDistance = position.x - cube.position.x;
+				float yDistance = position.y - cube.position.y;
+				float zDistance = position.z - cube.position.z;
 				
-				if(speed.y > 0 && cube.position.y - cube.height/2 - (position.y +height/2) < speed.y) {
-					speed.y = cube.position.y - cube.height/2 - (position.y +height/2);
-					
-					System.out.println("ADJUSTED Y SPEED TO: " + speed.y);
+				
+				if(xDistance < 0) {
+					xDistance += width / 2 + cube.width / 2;
+					if(xDistance < speed.x) {
+						speed.x = -xDistance;
+					}
 				}
-				else if(speed.y < 0 && position.y +height/2 - (cube.position.y - cube.height/2) > speed.y){
-					speed.y =  position.y +height/2 - (cube.position.y - cube.height/2);
-					
-					System.out.println("ADJUSTED Y SPEED TO: " + speed.y);
+				else {
+					xDistance -= width / 2 + cube.width / 2;
+					if(xDistance > speed.x) {
+						speed.x = -xDistance;
+					}
 				}
 				
-				if(speed.z > 0 && cube.position.z - cube.depth/2 - (position.z +depth/2) < speed.z) {
-					speed.z = cube.position.z - cube.depth/2 - (position.z +depth/2);
-					
-					System.out.println("ADJUSTED Z SPEED TO: " + speed.z);
+				if(yDistance < 0) {
+					yDistance += height / 2 + cube.height / 2;
+					if(yDistance < speed.y) {
+						speed.y = -yDistance;
+					}
 				}
-				else if(speed.z < 0 && position.z +depth/2 - (cube.position.z - cube.depth/2) > speed.z){
-					speed.z =  position.z +depth/2 - (cube.position.z - cube.depth/2);
-					
-					System.out.println("ADJUSTED Z SPEED TO: " + speed.z);
+				else {
+					yDistance -= height / 2 + cube.height / 2;
+					if(yDistance > speed.y) {
+						speed.y = -yDistance;
+					}
 				}
 				
-				System.out.println("COLLISION");
+				if(zDistance < 0) {
+					zDistance += depth / 2 + cube.depth/2;
+					if(zDistance < speed.z) {
+						speed.z = -zDistance;
+					}
+				}
+				else {
+					zDistance -= depth / 2 + cube.depth/2;
+					if(zDistance > speed.z) {
+						speed.z = -zDistance;
+					}
+				}
 			}
 		}
 		return speed;
