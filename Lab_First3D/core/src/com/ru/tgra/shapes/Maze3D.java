@@ -32,10 +32,10 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		Gdx.input.setInputProcessor(this);
 		shader = new Shader();
 		
-		lightSource = new Point3D(1,40,0);
+		lightSource = new Point3D(1,20,0);
 		shader.setLightSource(lightSource.x, lightSource.y, lightSource.z);
 		shader.setLightDiffuse(0.9f, 0.7f, 0.2f, 1);
-		shader.setLightRange(100f);
+		shader.setLightRange(20f);
 		shader.setMaterialDiffuse(0.7f, 0.2f, 0, 1);
 		shader.setLightSpecular(0.7f, 0.2f, 0, 1);
 		shader.setMaterialSpecular(0.7f, 0.2f, 0, 1);
