@@ -1,6 +1,7 @@
 package com.ru.tgra.shapes;
 
 import java.nio.FloatBuffer;
+import java.util.List;
 
 public class MazeWall {
 	public Point3D position;
@@ -18,7 +19,8 @@ public class MazeWall {
 	private Point3D posA;
 	private Point3D posB;
 	private boolean AtoB;
-	private float speed;
+	public float speed;
+	private Vector3D velocity;
 	
 	public MazeWall(Point3D p, float w, float h, float d) {
 		position = p;
@@ -64,12 +66,18 @@ public class MazeWall {
 		return matrix.matrix;
 	}
 	
-	//Used only for the moving object in the maze
-	public void move(float dt) {
+	public void move(float dt, Point3D playerPos, Vector3D playerDimensions)
+	{
 		if(!moving) {
 			return;
 		}
-			
+		calculateVelocity(dt);
+		collides(playerPos, playerDimensions);
+		position.add(velocity);
+	}
+	//Used only for the moving object in the maze
+	private void calculateVelocity(float dt) {
+		
 		Vector3D fromAtoB = new Vector3D(posA.x - posB.x, posA.y - posB.y, posA.z - posB.z);
 		Vector3D direction = new Vector3D(0,0,0);
 		
@@ -110,8 +118,78 @@ public class MazeWall {
 		}
 		
 		//System.out.println("Direction: " +  direction.x + ", " + direction.y + ", " + direction.z);
+		velocity = direction;
+	}
+	
+	private void collides(Point3D playerPos, Vector3D playerDimensions) {
+		boolean inXRange = false;
+		boolean inYRange = false;
+		boolean inZRange = false;
 		
-		position.add(direction);
+		if(playerPos.x + playerDimensions.x/2 >= position.x + velocity.x- width/2 && playerPos.x - playerDimensions.x/2 <= position.x + velocity.x + width/2) {
+			inXRange = true;
+		}
+		
+		if(playerPos.y + playerDimensions.y/2 >= position.y + velocity.y- height/2 && playerPos.y - playerDimensions.y/2 <= position.y + velocity.y + height/2) {
+			inYRange = true;
+		}
+		
+		if(playerPos.z + playerDimensions.z/2 >= position.z + velocity.z- depth/2 && playerPos.z - playerDimensions.z/2 <= position.z + velocity.z + depth/2) {
+			inZRange = true;
+		}
+		
+		if(inXRange && inZRange && inYRange) {
+			velocity.set(0, 0, 0);
+			/*
+			//Negative distance = behind, Positive distance = in front
+			float xDistance = position.x - playerPos.x;
+			float yDistance = position.y - playerPos.y;
+			float zDistance = position.z - playerPos.z;
+			
+			System.out.println("x distance: " + xDistance);
+			System.out.println("y distance: " + yDistance);
+			System.out.println("z distance: " + zDistance);
+			
+			if(xDistance <= 0) {
+				xDistance += width / 2 + playerDimensions.x / 2;
+				if(xDistance <= velocity.x) {
+					velocity.x = -xDistance;
+				}
+			}
+			else {
+				xDistance -= width / 2 + playerDimensions.x / 2;
+				if(xDistance >= velocity.x) {
+					velocity.x = -xDistance;
+				}
+			}
+			
+			if(yDistance <= 0) {
+				yDistance += height / 2 + playerDimensions.y / 2;
+				if(yDistance <= velocity.y) {
+					velocity.y = -yDistance;
+				}
+			}
+			else {
+				yDistance -= height / 2 + playerDimensions.y / 2;
+				if(yDistance >= velocity.y) {
+					velocity.y = -yDistance;
+				}
+			}
+			
+			if(zDistance <= 0) {
+				zDistance += depth / 2 + playerDimensions.z / 2;
+				if(zDistance <= velocity.z) {
+					velocity.z = -zDistance;
+				}
+			}
+			else {
+				zDistance -= depth / 2 + playerDimensions.z/2;
+				if(zDistance >= velocity.z) {
+					velocity.z = -zDistance;
+				}
+			}
+			*/
+		}
 	}
 	
 	public void setColor(float r, float g, float b) {

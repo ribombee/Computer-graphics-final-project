@@ -163,7 +163,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 			firstPersonPlayer.playerCamera.roll(-0.4f);
 		}
 		playerMovement.normalize();
-		movingWall.move(deltaTime);
+		movingWall.move(deltaTime, firstPersonPlayer.playerCamera.eye, new Vector3D(firstPersonPlayer.width, firstPersonPlayer.height, firstPersonPlayer.depth));
 		firstPersonPlayer.move(playerMovement, walls);		
 		
 	}
