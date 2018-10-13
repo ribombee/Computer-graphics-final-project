@@ -140,55 +140,6 @@ public class MazeWall {
 		
 		if(inXRange && inZRange && inYRange) {
 			velocity.set(0, 0, 0);
-			/*
-			//Negative distance = behind, Positive distance = in front
-			float xDistance = position.x - playerPos.x;
-			float yDistance = position.y - playerPos.y;
-			float zDistance = position.z - playerPos.z;
-			
-			System.out.println("x distance: " + xDistance);
-			System.out.println("y distance: " + yDistance);
-			System.out.println("z distance: " + zDistance);
-			
-			if(xDistance <= 0) {
-				xDistance += width / 2 + playerDimensions.x / 2;
-				if(xDistance <= velocity.x) {
-					velocity.x = -xDistance;
-				}
-			}
-			else {
-				xDistance -= width / 2 + playerDimensions.x / 2;
-				if(xDistance >= velocity.x) {
-					velocity.x = -xDistance;
-				}
-			}
-			
-			if(yDistance <= 0) {
-				yDistance += height / 2 + playerDimensions.y / 2;
-				if(yDistance <= velocity.y) {
-					velocity.y = -yDistance;
-				}
-			}
-			else {
-				yDistance -= height / 2 + playerDimensions.y / 2;
-				if(yDistance >= velocity.y) {
-					velocity.y = -yDistance;
-				}
-			}
-			
-			if(zDistance <= 0) {
-				zDistance += depth / 2 + playerDimensions.z / 2;
-				if(zDistance <= velocity.z) {
-					velocity.z = -zDistance;
-				}
-			}
-			else {
-				zDistance -= depth / 2 + playerDimensions.z/2;
-				if(zDistance >= velocity.z) {
-					velocity.z = -zDistance;
-				}
-			}
-			*/
 		}
 	}
 	

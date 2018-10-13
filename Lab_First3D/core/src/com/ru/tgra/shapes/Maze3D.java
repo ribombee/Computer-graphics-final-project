@@ -24,16 +24,18 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 	MazeWall movingWall;
 	
 	Point3D lightSource;
+	
+	Maze maze;
 	@Override
 	public void create () {
 		
 		Gdx.input.setInputProcessor(this);
 		shader = new Shader();
 		
-		lightSource = new Point3D(1,15,0);
+		lightSource = new Point3D(1,40,0);
 		shader.setLightSource(lightSource.x, lightSource.y, lightSource.z);
 		shader.setLightDiffuse(0.9f, 0.7f, 0.2f, 1);
-		shader.setLightRange(20f);
+		shader.setLightRange(100f);
 		shader.setMaterialDiffuse(0.7f, 0.2f, 0, 1);
 		shader.setLightSpecular(0.7f, 0.2f, 0, 1);
 		shader.setMaterialSpecular(0.7f, 0.2f, 0, 1);
@@ -82,7 +84,18 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		firstPersonPlayer.move(new Vector3D(2f, 3, 10f), walls);
 		
 		//game.start();
-		
+		String mazeString = "WMWWW"
+						   +"WEMEW"
+						   +"WWWEW"
+						   +"WEMEW"
+						   +"WMWWW"
+						   +"WEEEW"
+						   +"WWMMW"
+						   +"WWEWW"
+						   +"MEEWW"
+						   +"WWWWW";
+				
+		maze = new Maze(5, 10, mazeString);
 	}
 
 	private void input()
@@ -142,8 +155,16 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 			firstPersonPlayer.playerCamera.roll(-0.4f);
 		}
 		playerMovement.normalize();
-		movingWall.move(deltaTime, firstPersonPlayer.playerCamera.eye, new Vector3D(firstPersonPlayer.width, firstPersonPlayer.height, firstPersonPlayer.depth));
-		firstPersonPlayer.move(playerMovement, walls);		
+		
+		for(MazeWall wall : maze.wallList) {
+			if(wall == null) {
+				continue;
+			}
+			wall.move(deltaTime, firstPersonPlayer.playerCamera.eye, new Vector3D(firstPersonPlayer.width, firstPersonPlayer.height, firstPersonPlayer.depth));
+		}
+		
+		//movingWall.move(deltaTime, firstPersonPlayer.playerCamera.eye, new Vector3D(firstPersonPlayer.width, firstPersonPlayer.height, firstPersonPlayer.depth));
+		firstPersonPlayer.move(playerMovement, maze.wallList);		
 		
 	}
 	
@@ -152,10 +173,21 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		//do all actual drawing and rendering here
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
+		/*
 		for(MazeWall wall : walls) {
 			shader.setMaterialDiffuse(wall.red, wall.green, wall.blue, 1);	
 			shader.setModelMatrix(wall.getModelMatrix());
 			wall.draw();
+		}
+		*/
+		
+		for(MazeWall wall : maze.wallList) {
+			if(wall == null) {
+				continue;
+			}
+			shader.setMaterialDiffuse(wall.red, wall.green, wall.blue, 1);	
+			shader.setModelMatrix(wall.getModelMatrix());
+			wall.draw();	
 		}
 		/*
 		shader.setMaterialDiffuse(movingWall.red, movingWall.green, movingWall.blue, 1);	
