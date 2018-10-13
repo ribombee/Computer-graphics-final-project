@@ -20,9 +20,9 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 	
 	private boolean wDown, aDown, sDown, dDown, upDown, downDown, leftDown, rightDown, qDown, eDown;
 	
-	private MazeWall plane;
 	private List<MazeWall> walls; 
-
+	MazeWall movingWall;
+	
 	Point3D lightSource;
 	@Override
 	public void create () {
@@ -58,14 +58,25 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		firstPersonPlayer = new Player(3,3,3);
 		firstPersonPlayer.playerCamera.PerspctiveProjection3D(80, 1, 1, 60);
 		
-		plane = new MazeWall(new Point3D(0,0,0), 20, 0.2f, 20);
+
 		walls = new ArrayList<MazeWall>();
+		
+		MazeWall plane = new MazeWall(new Point3D(0,0,0), 20, 0.2f, 20);
+		plane.setColor(0.2f, 0.6f, 0.3f);
+		
+		walls.add(plane);
 		for(int i = 0; i<20; i++)
 		{
-
-			walls.add(new MazeWall(new Point3D(5*i, 2 ,0), 0.2f, 2, 2));	
+			
+			MazeWall wall = new MazeWall(new Point3D(5*i, 2 ,0), 0.2f, 2, 2);
+			wall.setColor(0.7f, 0.3f, 0.8f);
+			walls.add(wall);
+			
 			walls.add(new MazeWall(new Point3D(0, 2 ,5*i), 2, 2, 0.2f));	
 		}
+		
+		movingWall = new MazeWall(new Point3D(10,0,10), new Point3D(0,0,0), 1, 1, 1, 5);
+		walls.add(movingWall);
 		
 		//firstPersonPlayer.playerCamera.LookAt(new Point3D(0,0,1), new Vector3D(0,0,1));
 		firstPersonPlayer.move(new Vector3D(2f, 3, 10f), walls);
@@ -131,13 +142,8 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 			firstPersonPlayer.playerCamera.roll(-0.4f);
 		}
 		playerMovement.normalize();
-		firstPersonPlayer.move(playerMovement, walls);
-
-		//angle += 180.0f * deltaTime;
-
-		//do all updates to the game
-		
-		
+		movingWall.move(deltaTime);
+		firstPersonPlayer.move(playerMovement, walls);		
 		
 	}
 	
@@ -146,14 +152,16 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		//do all actual drawing and rendering here
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-		shader.setMaterialDiffuse(0.9f, 0.3f, 0.1f, 1);	
-		
-		shader.setModelMatrix(plane.getModelMatrix());
-		plane.draw();
 		for(MazeWall wall : walls) {
+			shader.setMaterialDiffuse(wall.red, wall.green, wall.blue, 1);	
 			shader.setModelMatrix(wall.getModelMatrix());
 			wall.draw();
 		}
+		/*
+		shader.setMaterialDiffuse(movingWall.red, movingWall.green, movingWall.blue, 1);	
+		shader.setModelMatrix(movingWall.getModelMatrix());
+		movingWall.draw();
+		*/
 		
 		ModelMatrix.main.pushMatrix();
 		ModelMatrix.main.addTranslation(lightSource.x, lightSource.y + 7, lightSource.z);

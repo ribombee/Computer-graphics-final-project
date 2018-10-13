@@ -33,6 +33,16 @@ public class Vector3D {
 		y += v2.y;
 		z += v2.z;
 	}
+	
+	public Vector3D added(Vector3D v2)
+	{
+		Vector3D added = new Vector3D(x,y,z);
+		added.x += v2.x;
+		added.y += v2.y;
+		added.z += v2.z;
+		
+		return added;
+	}
 
 	public float dot(Vector3D v2)
 	{
