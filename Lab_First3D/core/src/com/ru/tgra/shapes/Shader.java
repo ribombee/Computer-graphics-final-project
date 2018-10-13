@@ -1,6 +1,7 @@
 package com.ru.tgra.shapes;
 
 import java.nio.FloatBuffer;
+import java.sql.Struct;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -23,10 +24,12 @@ public class Shader {
 	private int lightDiffuseLoc;
 	private int lightSpecularLoc;
 	private int lightRangeLoc;
+	private int pointLightLoc;
 	private int materialDiffuseLoc;
 	private int materialSpecularLoc;
 	private int materialShineLoc;
 	private int eyePosLoc;
+		
 	public Shader()
 	{
 		String vertexShaderString;
@@ -60,10 +63,9 @@ public class Shader {
 		modelMatrixLoc			= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_modelMatrix");
 		viewMatrixLoc			= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_viewMatrix");
 		projectionMatrixLoc		= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_projectionMatrix");
-
 		lightSourceLoc			= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_lightPosition");
 		lightDiffuseLoc			= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_lightDiffuse");
-		lightRangeLoc		= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_lightRange");
+		lightRangeLoc			= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_lightRange");
 		materialDiffuseLoc		= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_materialDiffuse");
 		lightSpecularLoc		= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_lightSpecular");
 		materialSpecularLoc		= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_materialSpecular");
@@ -71,6 +73,24 @@ public class Shader {
 		eyePosLoc				= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_eyePosition");
 
 		Gdx.gl.glUseProgram(renderingProgramID);
+	}
+	
+	private void set1f(String s, float f) {
+		Gdx.gl.glUniform1f(Gdx.gl.glGetUniformLocation(renderingProgramID, s), f);
+
+	}
+	
+	private void set4f(String s, float x, float y, float z, float w) {
+		Gdx.gl.glUniform4f(Gdx.gl.glGetUniformLocation(renderingProgramID, s), x, y, x, w);
+	}
+	
+	public void setPointLight(int i, Point3D position, Vector3D diffuse, Vector3D specular, float range) {
+		
+		String stwing= "u_pointLights[" + i + "]";
+		set4f(stwing +".position", position.x, position.y, position.x, 0);
+		set4f(stwing +".diffuse", diffuse.x, diffuse.y, diffuse.x, 1);
+		set4f(stwing +".specular", specular.x, specular.y, specular.x, 1);
+		set1f(stwing +".range", range);
 	}
 	
 	public void setLightSource(float x, float y, float z)

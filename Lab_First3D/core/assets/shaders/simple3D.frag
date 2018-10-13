@@ -5,8 +5,9 @@ precision mediump float;
 
 varying vec4 v_diffuse;
 varying vec4 v_specular;
+varying vec4 v_light;
 
 void main()
 {
-	gl_FragColor = v_diffuse + v_specular;
+	gl_FragColor = v_light;
 }

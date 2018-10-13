@@ -23,7 +23,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 	private List<MazeWall> walls; 
 	MazeWall movingWall;
 	
-	Point3D lightSource;
+	Point3D lightSource, light2, light3, light4;
 	@Override
 	public void create () {
 		
@@ -31,11 +31,32 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		shader = new Shader();
 		
 		lightSource = new Point3D(1,15,0);
+		light2 = new Point3D(5, 1, 10);
+		light3 = new Point3D(-5, 1, 10);
+		light4 = new Point3D(10, 15, 0);
 		shader.setLightSource(lightSource.x, lightSource.y, lightSource.z);
 		shader.setLightDiffuse(0.9f, 0.7f, 0.2f, 1);
-		shader.setLightRange(20f);
-		shader.setMaterialDiffuse(0.7f, 0.2f, 0, 1);
 		shader.setLightSpecular(0.7f, 0.2f, 0, 1);
+		shader.setLightRange(20f);
+		
+		Vector3D lightDiffuse = new Vector3D(0.8f, 0.5f, 0.5f);
+		Vector3D lightSpecular = new Vector3D(0.7f, 0.4f, 0.2f);
+		
+		shader.setPointLight(0,lightSource, lightDiffuse, lightSpecular, 20);
+		
+		lightDiffuse.set(0.3f, 0.5f, 0.7f);
+		
+		shader.setPointLight(1, light2, lightDiffuse, lightSpecular, 20);
+		
+		lightDiffuse.set(0.5f, 0.5f, 0.6f);
+		
+		shader.setPointLight(2, light3, lightDiffuse, lightSpecular, 20);
+		
+		lightDiffuse.set(0.5f, 0.7f, 0.3f);
+		
+		shader.setPointLight(3, light4, lightDiffuse, lightSpecular, 20);
+		
+		shader.setMaterialDiffuse(0.7f, 0.2f, 0, 1);
 		shader.setMaterialSpecular(0.7f, 0.2f, 0, 1);
 		shader.setMaterialShine(13);
 		
@@ -165,6 +186,27 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		
 		ModelMatrix.main.pushMatrix();
 		ModelMatrix.main.addTranslation(lightSource.x, lightSource.y + 7, lightSource.z);
+		ModelMatrix.main.addScale(2,2,2);
+		shader.setModelMatrix(ModelMatrix.main.matrix);
+		SphereGraphic.drawSolidSphere();
+		ModelMatrix.main.popMatrix();
+		
+		ModelMatrix.main.pushMatrix();
+		ModelMatrix.main.addTranslation(light2.x, light2.y + 7, light2.z);
+		ModelMatrix.main.addScale(2,2,2);
+		shader.setModelMatrix(ModelMatrix.main.matrix);
+		SphereGraphic.drawSolidSphere();
+		ModelMatrix.main.popMatrix();
+		
+		ModelMatrix.main.pushMatrix();
+		ModelMatrix.main.addTranslation(light3.x, light3.y + 7, light3.z);
+		ModelMatrix.main.addScale(2,2,2);
+		shader.setModelMatrix(ModelMatrix.main.matrix);
+		SphereGraphic.drawSolidSphere();
+		ModelMatrix.main.popMatrix();
+		
+		ModelMatrix.main.pushMatrix();
+		ModelMatrix.main.addTranslation(light4.x, light4.y + 7, light4.z);
 		ModelMatrix.main.addScale(2,2,2);
 		shader.setModelMatrix(ModelMatrix.main.matrix);
 		SphereGraphic.drawSolidSphere();
