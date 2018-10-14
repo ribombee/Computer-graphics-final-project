@@ -24,6 +24,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 	MazeWall movingWall;
 	
 	private List<PointLight> pointLights;
+	private DirectionalLight dirLight;
 	
 	Maze maze;
 	@Override
@@ -44,6 +45,10 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 			pL.updateShaderValues();
 		}
 		
+		dirLight = new DirectionalLight(new Vector3D(19, 0, -1),new Vector3D(0.9f, 0.7f, 0.2f),new Vector3D(0.7f, 0.2f, 0));
+		dirLight.fetchLocs(shader);
+		dirLight.updateShaderValues();
+				
 		shader.setMaterialDiffuse(0.7f, 0.2f, 0, 1);
 		shader.setMaterialSpecular(0.7f, 0.2f, 0, 1);
 		shader.setMaterialShine(13);
@@ -65,7 +70,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 
 		firstPersonPlayer = new Player(3,3,3);
-		firstPersonPlayer.playerCamera.PerspctiveProjection3D(80, 1, 1, 60);
+		firstPersonPlayer.playerCamera.PerspctiveProjection3D(80, 1, 1, 100);
 		
 
 		walls = new ArrayList<MazeWall>();

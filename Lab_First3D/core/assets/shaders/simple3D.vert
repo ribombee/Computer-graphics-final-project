@@ -33,15 +33,39 @@ struct pointLight  {
 	float range;
 };
 
-uniform pointLight u_pointLight;
+struct directionalLight {
+	vec4 direction;
+	vec4 diffuse;
+	vec4 specular;
+};
 
 uniform pointLight u_pointLights[4];
+uniform directionalLight u_directionalLight;
 
+vec4 directionalLightCalculations(directionalLight light, vec4 pos, vec4 norm, vec4 v) {
+
+	vec4 s = light.direction;
+	vec4 h = s + v;
+	
+	vec4 diffuseDiff = vec4(0.0);
+	
+	float lambert = (dot(norm, s) / (length(norm)*length(s)));
+	diffuseDiff = lambert * light.diffuse * u_materialDiffuse;
+		
+	float phong = max(0, (dot(norm, h) / (length(norm)*length(h))));
+	
+	vec4 specularDiff = vec4(0.0);
+	
+	specularDiff = pow(phong, u_materialShine) * light.specular * u_materialSpecular;
+	
+	specularDiff[3] = 0;
+	diffuseDiff[3] = 0;
+
+	return (diffuseDiff);
+}
 
 vec4 pointLightCalculations(pointLight light, vec4 pos, vec4 norm, vec4 v) {
 
-	
-	
 	vec4 s = light.position - pos;		
 	vec4 h = s + v;
 	
@@ -66,7 +90,6 @@ vec4 pointLightCalculations(pointLight light, vec4 pos, vec4 norm, vec4 v) {
 	diffuseDiff[3] = 0;
 
 	return (diffuseDiff + specularDiff);
-
 }
 
 
@@ -85,15 +108,15 @@ void main()
 	v_diffuse = vec4(0.0);
 	v_light = vec4(0.0);
 	
+	v_light += directionalLightCalculations(u_directionalLight, position, normal, v);
+	
 	for(int i = 0; i < 4; i++) {
-		v_light += pointLightCalculations(u_pointLights[i], position, normal, v);
+		//v_light += pointLightCalculations(u_pointLights[i], position, normal, v);
 	}
 	
 	v_light[3] = 1;
 	
-	
-	position = u_viewMatrix * position;
-	//v_light = v_specular + v_diffuse;
+	position = u_viewMatrix * position;	
 	
 	gl_Position = u_projectionMatrix * position;
 }
