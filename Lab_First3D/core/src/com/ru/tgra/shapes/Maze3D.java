@@ -23,38 +23,26 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 	private List<MazeWall> walls; 
 	MazeWall movingWall;
 	
-	Point3D lightSource, light2, light3, light4;
+	private List<PointLight> pointLights;
+	
+	Maze maze;
 	@Override
 	public void create () {
 		
 		Gdx.input.setInputProcessor(this);
 		shader = new Shader();
 		
-		lightSource = new Point3D(1,15,0);
-		light2 = new Point3D(5, 1, 10);
-		light3 = new Point3D(-5, 1, 10);
-		light4 = new Point3D(10, 15, 0);
-		shader.setLightSource(lightSource.x, lightSource.y, lightSource.z);
-		shader.setLightDiffuse(0.9f, 0.7f, 0.2f, 1);
-		shader.setLightSpecular(0.7f, 0.2f, 0, 1);
-		shader.setLightRange(20f);
+		pointLights = new ArrayList<PointLight>();
 		
-		Vector3D lightDiffuse = new Vector3D(0.8f, 0.5f, 0.5f);
-		Vector3D lightSpecular = new Vector3D(0.7f, 0.4f, 0.2f);
+		pointLights.add(new PointLight(0, new Point3D(10,10,0), new Vector3D(0.9f, 0.7f, 0.2f),new Vector3D(0.7f, 0.2f, 0), 20));
+		pointLights.add(new PointLight(1, new Point3D(0,10,10), new Vector3D(0.5f, 0.0f, 0.4f),new Vector3D(0.2f, 0.2f, 0), 20));
+		pointLights.add(new PointLight(2, new Point3D(0,10,-10), new Vector3D(0.5f, 0.5f, 0.4f),new Vector3D(0.2f, 0.2f, 0), 20));
+		pointLights.add(new PointLight(2, new Point3D(-10,10,0), new Vector3D(0.0f, 0.5f, 0.4f),new Vector3D(0.2f, 0.2f, 0), 20));
 		
-		shader.setPointLight(0,lightSource, lightDiffuse, lightSpecular, 20);
-		
-		lightDiffuse.set(0.3f, 0.5f, 0.7f);
-		
-		shader.setPointLight(1, light2, lightDiffuse, lightSpecular, 20);
-		
-		lightDiffuse.set(0.5f, 0.5f, 0.6f);
-		
-		shader.setPointLight(2, light3, lightDiffuse, lightSpecular, 20);
-		
-		lightDiffuse.set(0.5f, 0.7f, 0.3f);
-		
-		shader.setPointLight(3, light4, lightDiffuse, lightSpecular, 20);
+		for(PointLight pL : pointLights) {
+			pL.fetchLocs(shader);
+			pL.updateShaderValues();
+		}
 		
 		shader.setMaterialDiffuse(0.7f, 0.2f, 0, 1);
 		shader.setMaterialSpecular(0.7f, 0.2f, 0, 1);
@@ -103,7 +91,18 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		firstPersonPlayer.move(new Vector3D(2f, 3, 10f), walls);
 		
 		//game.start();
-		
+		String mazeString = "WMWWW"
+						   +"WEMEW"
+						   +"WWWEW"
+						   +"WEMEW"
+						   +"WMWWW"
+						   +"WEEEW"
+						   +"WWMMW"
+						   +"WWEWW"
+						   +"MEEWW"
+						   +"WWWWW";
+				
+		maze = new Maze(5, 10, mazeString);
 	}
 
 	private void input()
@@ -163,8 +162,21 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 			firstPersonPlayer.playerCamera.roll(-0.4f);
 		}
 		playerMovement.normalize();
-		movingWall.move(deltaTime, firstPersonPlayer.playerCamera.eye, new Vector3D(firstPersonPlayer.width, firstPersonPlayer.height, firstPersonPlayer.depth));
-		firstPersonPlayer.move(playerMovement, walls);		
+		
+		for(MazeWall wall : maze.wallList) {
+			if(wall == null) {
+				continue;
+			}
+			wall.move(deltaTime, firstPersonPlayer.playerCamera.eye, new Vector3D(firstPersonPlayer.width, firstPersonPlayer.height, firstPersonPlayer.depth));
+		}
+		
+		for(PointLight pL : pointLights) {
+			pL.move(deltaTime);
+			pL.updateShaderValues();
+		}
+		
+		//movingWall.move(deltaTime, firstPersonPlayer.playerCamera.eye, new Vector3D(firstPersonPlayer.width, firstPersonPlayer.height, firstPersonPlayer.depth));
+		firstPersonPlayer.move(playerMovement, maze.wallList);		
 		
 	}
 	
@@ -173,17 +185,28 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		//do all actual drawing and rendering here
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
+		/*
 		for(MazeWall wall : walls) {
 			shader.setMaterialDiffuse(wall.red, wall.green, wall.blue, 1);	
 			shader.setModelMatrix(wall.getModelMatrix());
 			wall.draw();
+		}
+		*/
+		
+		for(MazeWall wall : maze.wallList) {
+			if(wall == null) {
+				continue;
+			}
+			shader.setMaterialDiffuse(wall.red, wall.green, wall.blue, 1);	
+			shader.setModelMatrix(wall.getModelMatrix());
+			wall.draw();	
 		}
 		/*
 		shader.setMaterialDiffuse(movingWall.red, movingWall.green, movingWall.blue, 1);	
 		shader.setModelMatrix(movingWall.getModelMatrix());
 		movingWall.draw();
 		*/
-		
+		/*
 		ModelMatrix.main.pushMatrix();
 		ModelMatrix.main.addTranslation(lightSource.x, lightSource.y + 7, lightSource.z);
 		ModelMatrix.main.addScale(2,2,2);
@@ -211,7 +234,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		shader.setModelMatrix(ModelMatrix.main.matrix);
 		SphereGraphic.drawSolidSphere();
 		ModelMatrix.main.popMatrix();
-		
+		*/
 		Point3D cameraPosVec = firstPersonPlayer.playerCamera.eye;
 		shader.setEyePosition(cameraPosVec.x, cameraPosVec.y, cameraPosVec.z);
 		shader.setProjectionMatrix(firstPersonPlayer.playerCamera.getProjectionMatrix());

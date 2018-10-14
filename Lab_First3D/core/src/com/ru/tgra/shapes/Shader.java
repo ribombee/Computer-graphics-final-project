@@ -1,7 +1,6 @@
 package com.ru.tgra.shapes;
 
 import java.nio.FloatBuffer;
-import java.sql.Struct;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -75,13 +74,17 @@ public class Shader {
 		Gdx.gl.glUseProgram(renderingProgramID);
 	}
 	
-	private void set1f(String s, float f) {
+	public void set1f(String s, float f) {
 		Gdx.gl.glUniform1f(Gdx.gl.glGetUniformLocation(renderingProgramID, s), f);
 
 	}
 	
-	private void set4f(String s, float x, float y, float z, float w) {
+	public void set4f(String s, float x, float y, float z, float w) {
 		Gdx.gl.glUniform4f(Gdx.gl.glGetUniformLocation(renderingProgramID, s), x, y, x, w);
+	}
+	
+	public int getLoc(String s) {
+		return Gdx.gl.glGetUniformLocation(renderingProgramID, s);
 	}
 	
 	public void setPointLight(int i, Point3D position, Vector3D diffuse, Vector3D specular, float range) {

@@ -54,10 +54,6 @@ public class Player {
 				float yDistance = position.y - cube.position.y;
 				float zDistance = position.z - cube.position.z;
 				
-				System.out.println("x distance: " + xDistance);
-				System.out.println("y distance: " + yDistance);
-				System.out.println("z distance: " + zDistance);
-				
 				if(xDistance <= 0) {
 					xDistance += width / 2 + cube.width / 2;
 					if(xDistance <= speed.x) {
