@@ -58,7 +58,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 
 		firstPersonPlayer = new Player(3,3,3);
-		firstPersonPlayer.playerCamera.PerspctiveProjection3D(80, 1, 1, 60);
+		firstPersonPlayer.playerCamera.PerspctiveProjection3D(80, 1, 1, 150);
 		
 
 		walls = new ArrayList<MazeWall>();
@@ -81,7 +81,8 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		walls.add(movingWall);
 		
 		//firstPersonPlayer.playerCamera.LookAt(new Point3D(0,0,1), new Vector3D(0,0,1));
-		firstPersonPlayer.move(new Vector3D(2f, 3, 10f), walls);
+		firstPersonPlayer.move(new Vector3D(2f, 15, 10f), walls);
+		firstPersonPlayer.playerCamera.LookAt(new Point3D(0,0,0), new Vector3D(0,1,0));
 		
 		//game.start();
 		String mazeString = "WMWWW"
@@ -95,7 +96,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 						   +"MEEWW"
 						   +"WWWWW";
 				
-		maze = new Maze(5, 10, mazeString);
+		maze = new Maze(11, 11);
 	}
 
 	private void input()
