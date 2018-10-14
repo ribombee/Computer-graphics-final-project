@@ -7,9 +7,10 @@ public class Maze {
 	char charMaze[][];
 	public ArrayList<MazeWall> wallList;
 	
-	int blockWidth = 5;
-	int blockHeight = 5;
-	int blockDepth = 5;
+	public int width, height;
+	public int blockWidth = 5;
+	public int blockHeight = 5;
+	public int blockDepth = 5;
 	public Maze(int xSize, int ySize, String maze) {
 		String cleanedMaze = new String(maze);
 		cleanedMaze.replaceAll("\\s", "");
@@ -31,6 +32,8 @@ public class Maze {
 				}
 			}
 		}
+		width = xSize;
+		height = ySize;
 	}
 	public Maze(int xSize, int ySize) {
 		charMaze = new char[xSize][ySize];
@@ -51,6 +54,8 @@ public class Maze {
 				}
 			}
 		}
+		width = xSize;
+		height = ySize;
 	}
 	
 	private void GenerateMazeDepthFirst(int xSize, int ySize) {

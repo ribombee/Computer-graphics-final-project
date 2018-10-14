@@ -17,11 +17,9 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 	private Shader shader;
 	
 	private Player firstPersonPlayer;
-	
+	private Camera orthographicCam;	
+	boolean orthographicCamEnabled = true;
 	private boolean wDown, aDown, sDown, dDown, upDown, downDown, leftDown, rightDown, qDown, eDown;
-	
-	private List<MazeWall> walls; 
-	MazeWall movingWall;
 	
 	Point3D lightSource;
 	
@@ -32,10 +30,10 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		Gdx.input.setInputProcessor(this);
 		shader = new Shader();
 		
-		lightSource = new Point3D(1,20,0);
+		lightSource = new Point3D(5*5,20,5*5);
 		shader.setLightSource(lightSource.x, lightSource.y, lightSource.z);
 		shader.setLightDiffuse(0.9f, 0.7f, 0.2f, 1);
-		shader.setLightRange(20f);
+		shader.setLightRange(30f);
 		shader.setMaterialDiffuse(0.7f, 0.2f, 0, 1);
 		shader.setLightSpecular(0.7f, 0.2f, 0, 1);
 		shader.setMaterialSpecular(0.7f, 0.2f, 0, 1);
@@ -56,47 +54,19 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 
 		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
+				
+		maze = new Maze(11, 11);
 
 		firstPersonPlayer = new Player(3,3,3);
 		firstPersonPlayer.playerCamera.PerspctiveProjection3D(80, 1, 1, 150);
 		
-
-		walls = new ArrayList<MazeWall>();
-		
-		MazeWall plane = new MazeWall(new Point3D(0,0,0), 20, 0.2f, 20);
-		plane.setColor(0.2f, 0.6f, 0.3f);
-		
-		walls.add(plane);
-		for(int i = 0; i<20; i++)
-		{
-			
-			MazeWall wall = new MazeWall(new Point3D(5*i, 2 ,0), 0.2f, 2, 2);
-			wall.setColor(0.7f, 0.3f, 0.8f);
-			walls.add(wall);
-			
-			walls.add(new MazeWall(new Point3D(0, 2 ,5*i), 2, 2, 0.2f));	
-		}
-		
-		movingWall = new MazeWall(new Point3D(10,0,10), new Point3D(0,0,0), 1, 1, 1, 5);
-		walls.add(movingWall);
-		
-		//firstPersonPlayer.playerCamera.LookAt(new Point3D(0,0,1), new Vector3D(0,0,1));
-		firstPersonPlayer.move(new Vector3D(2f, 15, 10f), walls);
+		firstPersonPlayer.move(new Vector3D(2f, 15, 10f), maze.wallList);
 		firstPersonPlayer.playerCamera.LookAt(new Point3D(0,0,0), new Vector3D(0,1,0));
 		
-		//game.start();
-		String mazeString = "WMWWW"
-						   +"WEMEW"
-						   +"WWWEW"
-						   +"WEMEW"
-						   +"WMWWW"
-						   +"WEEEW"
-						   +"WWMMW"
-						   +"WWEWW"
-						   +"MEEWW"
-						   +"WWWWW";
-				
-		maze = new Maze(11, 11);
+		orthographicCam = new Camera();
+		orthographicCam.OrthographicProjection3D(-60, 60, -60, 60, 1, 250);
+		orthographicCam.eye = new Point3D(maze.blockWidth*(maze.width - 1), firstPersonPlayer.playerCamera.eye.y+20, 0);//maze.blockDepth*(maze.height-1)/2f);
+		orthographicCam.LookAt(new Point3D(maze.blockWidth*(maze.width - 1), firstPersonPlayer.playerCamera.eye.y, 0), new Vector3D(0,0,-1));
 	}
 
 	private void input()
@@ -165,48 +135,64 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		}
 		
 		//movingWall.move(deltaTime, firstPersonPlayer.playerCamera.eye, new Vector3D(firstPersonPlayer.width, firstPersonPlayer.height, firstPersonPlayer.depth));
-		firstPersonPlayer.move(playerMovement, maze.wallList);		
+		firstPersonPlayer.move(playerMovement, maze.wallList);
+		//orthographicCam.eye.set(firstPersonPlayer.playerCamera.eye.x, firstPersonPlayer.playerCamera.eye.z, firstPersonPlayer.playerCamera.eye.z);
 		
 	}
 	
 	private void display()
 	{
-		//do all actual drawing and rendering here
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-		/*
-		for(MazeWall wall : walls) {
-			shader.setMaterialDiffuse(wall.red, wall.green, wall.blue, 1);	
-			shader.setModelMatrix(wall.getModelMatrix());
-			wall.draw();
-		}
-		*/
-		
-		for(MazeWall wall : maze.wallList) {
-			if(wall == null) {
-				continue;
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+		for(int i = 0; i < 2; i++)
+		{
+
+			if(i == 0)
+			{
+				Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+				Point3D cameraPosVec = firstPersonPlayer.playerCamera.eye;
+				shader.setEyePosition(cameraPosVec.x, cameraPosVec.y, cameraPosVec.z);
+				shader.setProjectionMatrix(firstPersonPlayer.playerCamera.getProjectionMatrix());
+				shader.setViewMatrix(firstPersonPlayer.playerCamera.getViewMatrix());	
+				
+
+				ModelMatrix.main.pushMatrix();
+				ModelMatrix.main.addTranslation(lightSource.x, lightSource.y + 7, lightSource.z);
+				ModelMatrix.main.addScale(2,2,2);
+				shader.setModelMatrix(ModelMatrix.main.matrix);
+				SphereGraphic.drawSolidSphere();
+				ModelMatrix.main.popMatrix();
 			}
-			shader.setMaterialDiffuse(wall.red, wall.green, wall.blue, 1);	
-			shader.setModelMatrix(wall.getModelMatrix());
-			wall.draw();	
+			else
+			{
+				if(!orthographicCamEnabled) {
+					continue;
+				}
+				Gdx.gl.glViewport(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+				Point3D cameraPosVec = orthographicCam.eye;
+				shader.setEyePosition(cameraPosVec.x, cameraPosVec.y, cameraPosVec.z);
+				shader.setProjectionMatrix(orthographicCam.getProjectionMatrix());
+				shader.setViewMatrix(orthographicCam.getViewMatrix());
+				
+				ModelMatrix.main.pushMatrix();
+				ModelMatrix.main.addTranslation(firstPersonPlayer.playerCamera.eye.x, 20, firstPersonPlayer.playerCamera.eye.z);
+				ModelMatrix.main.addScale(1,1,1);
+				shader.setModelMatrix(ModelMatrix.main.matrix);
+				SphereGraphic.drawSolidSphere();
+				ModelMatrix.main.popMatrix();
+			}
+			//do all actual drawing and rendering here
+			
+			for(MazeWall wall : maze.wallList) {
+				if(wall == null) {
+					continue;
+				}
+				shader.setMaterialDiffuse(wall.red, wall.green, wall.blue, 1);	
+				shader.setModelMatrix(wall.getModelMatrix());
+				wall.draw();	
+			}
+			
 		}
-		/*
-		shader.setMaterialDiffuse(movingWall.red, movingWall.green, movingWall.blue, 1);	
-		shader.setModelMatrix(movingWall.getModelMatrix());
-		movingWall.draw();
-		*/
-		
-		ModelMatrix.main.pushMatrix();
-		ModelMatrix.main.addTranslation(lightSource.x, lightSource.y + 7, lightSource.z);
-		ModelMatrix.main.addScale(2,2,2);
-		shader.setModelMatrix(ModelMatrix.main.matrix);
-		SphereGraphic.drawSolidSphere();
-		ModelMatrix.main.popMatrix();
-		
-		Point3D cameraPosVec = firstPersonPlayer.playerCamera.eye;
-		shader.setEyePosition(cameraPosVec.x, cameraPosVec.y, cameraPosVec.z);
-		shader.setProjectionMatrix(firstPersonPlayer.playerCamera.getProjectionMatrix());
-		shader.setViewMatrix(firstPersonPlayer.playerCamera.getViewMatrix());
 	}
 
 	@Override
@@ -290,6 +276,9 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		}
 		if(keycode == Input.Keys.E) {
 			eDown = false;
+		}
+		if(keycode == Input.Keys.SPACE) {
+			orthographicCamEnabled = !orthographicCamEnabled;
 		}
 		return false;
 	}
