@@ -20,12 +20,16 @@ public class DirectionalLight {
 	}
 
 	public void fetchLocs(Shader shader) {
-		dirLoc = shader.getLoc("u_directionalLight.position");
+		dirLoc = shader.getLoc("u_directionalLight.direction");
 		diffLoc = shader.getLoc("u_directionalLight.diffuse");
 		specLoc = shader.getLoc("u_directionalLight.specular");
 	}
 	
 	public void updateShaderValues() {
+		
+		System.out.println("Dirlight: " + dirLoc + ", " + diffLoc + ", " + specLoc);
+
+		
 		Gdx.gl.glUniform4f(dirLoc, direction.x, direction.y, direction.z, 1);
 		Gdx.gl.glUniform4f(diffLoc, diffRed, diffGreen, diffBlue, 1);
 		Gdx.gl.glUniform4f(specLoc, specRed, specGreen, specBlue, 1);

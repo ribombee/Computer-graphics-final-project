@@ -20,6 +20,12 @@ public class Player {
 		depth = d;
 	}
 	
+	public void moveToStart(Point3D start) {
+		//start = playerCamera.GetTranslationVector(start);
+		Vector3D toStart = new Vector3D(start.x, start.y, start.z);
+		playerCamera.translate(toStart);
+	}
+	
 	public void move(Vector3D speed, List<MazeWall> cubeObjects) {
 		speed.scale(maxSpeed);
 		speed = playerCamera.GetTranslationVector(speed);
@@ -36,15 +42,15 @@ public class Player {
 			
 			Point3D position = playerCamera.eye;
 			
-			if(cube.position.x + cube.width/2 >= position.x + speed.x- width/2 && cube.position.x - cube.width/2 <= position.x + speed.x + width/2) {
+			if(cube.position.x + cube.width/2 > position.x + speed.x- width/2 && cube.position.x - cube.width/2 < position.x + speed.x + width/2) {
 				inXRange = true;
 			}
 			
-			if(cube.position.y + cube.height/2 >= position.y + speed.y- height/2 && cube.position.y - cube.height/2 <= position.y + speed.y + height/2) {
+			if(cube.position.y + cube.height/2 > position.y + speed.y- height/2 && cube.position.y - cube.height/2 < position.y + speed.y + height/2) {
 				inYRange = true;
 			}
 			
-			if(cube.position.z + cube.depth/2 >= position.z + speed.z- depth/2 && cube.position.z - cube.depth/2 <= position.z + speed.z + depth/2) {
+			if(cube.position.z + cube.depth/2 > position.z + speed.z- depth/2 && cube.position.z - cube.depth/2 < position.z + speed.z + depth/2) {
 				inZRange = true;
 			}
 			

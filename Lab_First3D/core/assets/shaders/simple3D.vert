@@ -49,7 +49,7 @@ vec4 directionalLightCalculations(directionalLight light, vec4 pos, vec4 norm, v
 	
 	vec4 diffuseDiff = vec4(0.0);
 	
-	float lambert = (dot(norm, s) / (length(norm)*length(s)));
+	float lambert = max(0, (dot(norm, s) / (length(norm)*length(s))));
 	diffuseDiff = lambert * light.diffuse * u_materialDiffuse;
 		
 	float phong = max(0, (dot(norm, h) / (length(norm)*length(h))));
@@ -61,7 +61,7 @@ vec4 directionalLightCalculations(directionalLight light, vec4 pos, vec4 norm, v
 	specularDiff[3] = 0;
 	diffuseDiff[3] = 0;
 
-	return (diffuseDiff);
+	return (diffuseDiff + specularDiff);
 }
 
 vec4 pointLightCalculations(pointLight light, vec4 pos, vec4 norm, vec4 v) {
@@ -111,12 +111,13 @@ void main()
 	v_light += directionalLightCalculations(u_directionalLight, position, normal, v);
 	
 	for(int i = 0; i < 4; i++) {
-		//v_light += pointLightCalculations(u_pointLights[i], position, normal, v);
+		v_light += pointLightCalculations(u_pointLights[i], position, normal, v);
 	}
 	
 	v_light[3] = 1;
 	
-	position = u_viewMatrix * position;	
+	position = u_viewMatrix * position;
+	
 	
 	gl_Position = u_projectionMatrix * position;
 }
