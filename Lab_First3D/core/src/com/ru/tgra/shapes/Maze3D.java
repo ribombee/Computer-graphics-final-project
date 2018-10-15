@@ -187,6 +187,13 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 				shader.setProjectionMatrix(firstPersonPlayer.playerCamera.getProjectionMatrix());
 				shader.setViewMatrix(firstPersonPlayer.playerCamera.getViewMatrix());	
 				
+
+				ModelMatrix.main.pushMatrix();
+				ModelMatrix.main.addTranslation(5*5, 60, 0);
+				ModelMatrix.main.addScale(5,5,5);
+				shader.setModelMatrix(ModelMatrix.main.matrix);
+				FileModel.draw();
+				ModelMatrix.main.popMatrix();
 			}
 			else if (i == 1) {
 				if(!orthographicCamEnabled) {
@@ -211,14 +218,6 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 				}
 
 				Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-
-				//Clear viewport
-				/*
-				Gdx.gl.glEnable(GL20.GL_SCISSOR_TEST);
-				Gdx.gl.glScissor(Gdx.graphics.getWidth()/2, 0, Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2);
-				Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-				Gdx.gl.glDisable(GL20.GL_SCISSOR_TEST);
-				*/
 				
 				Point3D cameraPosVec = thirdPersonCam.eye;
 				shader.setEyePosition(cameraPosVec.x, cameraPosVec.y, cameraPosVec.z);
@@ -227,18 +226,16 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 				
 				ModelMatrix.main.pushMatrix();
 				ModelMatrix.main.addTranslation(firstPersonPlayer.playerCamera.eye.x, firstPersonPlayer.playerCamera.eye.y, firstPersonPlayer.playerCamera.eye.z);
-				ModelMatrix.main.addScale(0.5f,0.5f,0.5f);
+
+				//ModelMatrix.main.addRotationX(180);
+				ModelMatrix.main.addRotationZ(90);
+				ModelMatrix.main.addRotationY(90);
+				ModelMatrix.main.addScale(0.2f,0.2f,0.2f);
 				shader.setModelMatrix(ModelMatrix.main.matrix);
 				FileModel.draw();
 				ModelMatrix.main.popMatrix();
 			}
 
-			ModelMatrix.main.pushMatrix();
-			ModelMatrix.main.addTranslation(5*5, 20, 5*5);
-			ModelMatrix.main.addScale(5,5,5);
-			shader.setModelMatrix(ModelMatrix.main.matrix);
-			FileModel.draw();
-			ModelMatrix.main.popMatrix();
 			
 			for(MazeWall wall : maze.wallList) {
 				if(wall == null) {

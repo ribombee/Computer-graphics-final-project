@@ -16,17 +16,20 @@ public class FileModel {
 	private static int vertexPointer;
 	private static int normalPointer;
 
-	private static int vertexCount;
+	private static int faceCount;
+	private static int faceSize;
 	public static void create(int vertexPointer, int normalPointer) {
 		FileModel.vertexPointer = vertexPointer;
 		FileModel.normalPointer = normalPointer;
-		String filePosition = "models/FinalBaseMesh.obj";
+		String filePosition = "models/Cat.obj";
 		readFile(filePosition);
 	}
 	
 	private static void readFile(String path) {
 		ArrayList<float[]> vertices = new ArrayList<float[]>();
 		ArrayList<float[]> normals = new ArrayList<float[]>();
+		ArrayList<float[]> facesVertices = new ArrayList<float[]>();
+		ArrayList<float[]> facesNormals = new ArrayList<float[]>();
 		//System.out.println();
 		try {
 
@@ -49,24 +52,49 @@ public class FileModel {
 						vertex[2] = Float.parseFloat(splitLine[3]);
 						normals.add(vertex);
 					}
+					if(splitLine[0].compareToIgnoreCase("f") == 0) {
+						int substrStart = 2;
+						if(line.substring(1, 3).compareTo("  ") == 0) {
+							substrStart = 3;
+						}
+						splitLine = line.substring(substrStart, line.length()).split(" ");
+						
+						faceSize = splitLine.length;
+						
+						for(int i = 0; i<faceSize; i++) {
+							String[] splitValue = splitLine[i].split("[\\/\\\\]+");
+							int vertexIndex = Integer.parseInt(splitValue[0]) - 1;
+							int normalIndex = 0;
+							if(splitValue.length > 2) {
+								normalIndex = Integer.parseInt(splitValue[2]) - 1;
+							}
+							else {
+								normalIndex = Integer.parseInt(splitValue[1]) - 1;
+							}
+							facesVertices.add(vertices.get(vertexIndex));
+							facesNormals.add(normals.get(normalIndex));
+						}
+					}
 				}
 				line = reader.readLine();
 			}
 			reader.close();
 			
-			vertexCount = vertices.size();
-			System.out.println(vertexCount);
-			vertexBuffer = BufferUtils.newFloatBuffer(vertices.size()*3);
-			normalBuffer = BufferUtils.newFloatBuffer(normals.size()*3);
-			for(int i = 0; i<vertices.size(); i += 3)
-			{
-				vertexBuffer.put(i, vertices.get(i)[0]);
-				vertexBuffer.put(i+1, vertices.get(i)[1]);
-				vertexBuffer.put(i+2, vertices.get(i)[2]);
+			faceCount = facesVertices.size();
+			System.out.println(faceCount);
+			System.out.println(faceSize);
+			vertexBuffer = BufferUtils.newFloatBuffer(faceCount*3);
+			normalBuffer = BufferUtils.newFloatBuffer(faceCount*3);
+			for(int i = 0; i< faceCount; i += 1) {
+				
+				vertexBuffer.put(facesVertices.get(i)[0]);
+				vertexBuffer.put(facesVertices.get(i)[1]);
+				vertexBuffer.put(facesVertices.get(i)[2]);
 
-				normalBuffer.put(i, normals.get(i)[0]);
-				normalBuffer.put(i+1, normals.get(i)[1]);
-				normalBuffer.put(i+2, normals.get(i)[2]);
+				normalBuffer.put(facesNormals.get(i)[0]);
+				normalBuffer.put(facesNormals.get(i)[1]);
+				normalBuffer.put(facesNormals.get(i)[2]);
+				
 			}
 
 			vertexBuffer.rewind();
@@ -81,16 +109,8 @@ public class FileModel {
 		Gdx.gl.glVertexAttribPointer(vertexPointer, 3, GL20.GL_FLOAT, false, 0, vertexBuffer);
 		Gdx.gl.glVertexAttribPointer(normalPointer, 3, GL20.GL_FLOAT, false, 0, normalBuffer);
 
-		for(int i = 0; i < vertexCount; i += 3) {
-			Gdx.gl.glDrawArrays(GL20.GL_LINE_STRIP, i, 3);
+		for(int i = 0; i < faceCount; i += faceSize) {
+			Gdx.gl.glDrawArrays(GL20.GL_TRIANGLE_FAN, i, faceSize);
 		}
-		/*
-		Gdx.gl.glDrawArrays(GL20.GL_TRIANGLE_FAN, 0, 4);
-		Gdx.gl.glDrawArrays(GL20.GL_TRIANGLE_FAN, 4, 4);
-		Gdx.gl.glDrawArrays(GL20.GL_TRIANGLE_FAN, 8, 4);
-		Gdx.gl.glDrawArrays(GL20.GL_TRIANGLE_FAN, 12, 4);
-		Gdx.gl.glDrawArrays(GL20.GL_TRIANGLE_FAN, 16, 4);
-		Gdx.gl.glDrawArrays(GL20.GL_TRIANGLE_FAN, 20, 4);
-		*/
 	}
 }
