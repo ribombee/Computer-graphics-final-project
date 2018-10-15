@@ -36,10 +36,13 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		
 		pointLights = new ArrayList<PointLight>();
 		
-		pointLights.add(new PointLight(0, new Point3D(50,10,50), new Vector3D(0.8f, 0.7f, 0.2f),new Vector3D(0.7f, 0.2f, 0), 20));
-		pointLights.add(new PointLight(1, new Point3D(50,20,50), new Vector3D(0.8f, 0.2f, 0.4f),new Vector3D(0.2f, 0.2f, 0), 30));
-		pointLights.add(new PointLight(2, new Point3D(50,20,-50), new Vector3D(0.5f, 0.5f, 0.8f),new Vector3D(0.2f, 0.2f, 0), 50));
-		pointLights.add(new PointLight(2, new Point3D(-50,10,50), new Vector3D(0.2f, 0.5f, 0.8f),new Vector3D(0.2f, 0.2f, 0), 50));
+		//These pointlights will move in a circular motion. NOTE that the points they start at are not multiplied by the model//These pointlights will move in a circular motion. NOTE that the points they start at are not multiplied by the point matrix, so they are not
+		//Representative of where they actually show up in the world, but with the values we randomly decided to put in we got an effect we were happy with.
+		//While less intuitive, it works well enough for us. matrix, so they are not
+		pointLights.add(new PointLight(0, new Point3D(50,10,50), new Vector3D(0.8f, 0.7f, 0.2f),new Vector3D(0.7f, 0.2f, 0), 30));
+		pointLights.add(new PointLight(1, new Point3D(50,20,50), new Vector3D(0.8f, 0.2f, 0.4f),new Vector3D(0.2f, 0.2f, 0), 35));
+		pointLights.add(new PointLight(2, new Point3D(50,20,0), new Vector3D(0.5f, 0.5f, 0.8f),new Vector3D(0.2f, 0.2f, 0), 25));
+		pointLights.add(new PointLight(3, new Point3D(-50,10,50), new Vector3D(0.2f, 0.5f, 0.8f),new Vector3D(0.2f, 0.2f, 0), 30));
 		
 		for(PointLight pL : pointLights) {
 			pL.fetchLocs(shader);
@@ -62,7 +65,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		SincGraphic.create(vertexPointer);
 		CoordFrameGraphic.create(vertexPointer);
 
-		Gdx.gl.glClearColor(0.5f, 0.2f, 0.3f, 1);
+		Gdx.gl.glClearColor(0.3f, 0.3f, 0.2f, 1);
 
 		ModelMatrix.main = new ModelMatrix();
 		ModelMatrix.main.loadIdentityMatrix();
