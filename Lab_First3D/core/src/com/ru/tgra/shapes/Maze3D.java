@@ -137,25 +137,28 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		if(dDown) {
 			playerMovement.x += 1;
 		}
-		if(upDown) {
-			firstPersonPlayer.playerCamera.pitch(-0.8f);
-		}
-		if(downDown) {
-			firstPersonPlayer.playerCamera.pitch(0.8f);
-		}
-		if(leftDown) {
-			firstPersonPlayer.playerCamera.yaw(-1.6f);
-		}
-		if(rightDown) {
-			firstPersonPlayer.playerCamera.yaw(1.6f);
-		}
-		if(qDown) {
-			firstPersonPlayer.playerCamera.roll(0.4f);
-		}
-		if(eDown) {
-			firstPersonPlayer.playerCamera.roll(-0.4f);
+		if(!thirdPersonCamEnabled) {
+			if(upDown) {
+				firstPersonPlayer.playerCamera.pitch(-0.8f);
+			}
+			if(downDown) {
+				firstPersonPlayer.playerCamera.pitch(0.8f);
+			}
+			if(leftDown) {
+				firstPersonPlayer.playerCamera.yaw(-1.6f);
+			}
+			if(rightDown) {
+				firstPersonPlayer.playerCamera.yaw(1.6f);
+			}
+			if(qDown) {
+				firstPersonPlayer.playerCamera.roll(0.4f);
+			}
+			if(eDown) {
+				firstPersonPlayer.playerCamera.roll(-0.4f);
+			}
 		}
 		playerMovement.normalize();
+		firstPersonPlayer.move(playerMovement, maze.wallList);
 		
 		for(MazeWall wall : maze.wallList) {
 			if(wall == null) {
@@ -169,7 +172,6 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 			pL.updateShaderValues();
 		}
 		
-		firstPersonPlayer.move(playerMovement, maze.wallList);
 		thirdPersonCam.eye.set(firstPersonPlayer.playerCamera.eye.x + 10, firstPersonPlayer.playerCamera.eye.y + 20, firstPersonPlayer.playerCamera.eye.z);
 		thirdPersonCam.LookAt(firstPersonPlayer.playerCamera.eye, new Vector3D(0, 1, 0));
 		
@@ -336,6 +338,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		if(keycode == Input.Keys.SPACE) {
 			orthographicCamEnabled = !orthographicCamEnabled;
 			thirdPersonCamEnabled = !thirdPersonCamEnabled;
+			firstPersonPlayer.playerCamera.LookAt(new Point3D(firstPersonPlayer.playerCamera.eye.x - 5, firstPersonPlayer.playerCamera.eye.y, firstPersonPlayer.playerCamera.eye.z), new Vector3D(0,1,0));
 		}
 		return false;
 	}
