@@ -108,8 +108,6 @@ public class MazeWall {
 			
 			if((BtoPos.added(direction)).length() >= fromAtoB.length()) {
 				
-				System.out.println("Length of btopos: " + BtoPos.added(direction).length());
-				System.out.println("Length of atob: " + fromAtoB.length());
 				//System.out.println("in posA");
 				position.set(posA.x, posA.y, posA.z);
 				AtoB = true;
