@@ -21,7 +21,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 	boolean orthographicCamEnabled = true;
 	
 	private Camera thirdPersonCam;
-	boolean thirdPersonCamEnabled = true;
+	boolean thirdPersonCamEnabled = false;
 	private boolean wDown, aDown, sDown, dDown, upDown, downDown, leftDown, rightDown, qDown, eDown;
 	
 	private List<MazeWall> walls; 
@@ -92,7 +92,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		orthographicCam.LookAt(new Point3D(maze.blockWidth*(maze.width - 1), firstPersonPlayer.playerCamera.eye.y, 0), new Vector3D(0,0,-1));
 		
 		thirdPersonCam = new Camera();
-		thirdPersonCam.PerspctiveProjection3D(80, 1, 1, 150);
+		thirdPersonCam.PerspctiveProjection3D(70, 1, 1f, 180);
 		thirdPersonCam.eye.set(firstPersonPlayer.playerCamera.eye.x + 10, firstPersonPlayer.playerCamera.eye.y + 10, firstPersonPlayer.playerCamera.eye.z + 10);
 		thirdPersonCam.LookAt(firstPersonPlayer.playerCamera.eye, new Vector3D(0, 1, 0));
 	}
@@ -167,7 +167,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		}
 		
 		firstPersonPlayer.move(playerMovement, maze.wallList);
-		thirdPersonCam.eye.set(firstPersonPlayer.playerCamera.eye.x + 10, firstPersonPlayer.playerCamera.eye.y + 10, firstPersonPlayer.playerCamera.eye.z + 10);
+		thirdPersonCam.eye.set(firstPersonPlayer.playerCamera.eye.x + 10, firstPersonPlayer.playerCamera.eye.y + 20, firstPersonPlayer.playerCamera.eye.z);
 		thirdPersonCam.LookAt(firstPersonPlayer.playerCamera.eye, new Vector3D(0, 1, 0));
 		
 	}
@@ -177,6 +177,10 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 		for(int i = 0; i < 3; i++) {
 			if(i == 0) {
+				if(thirdPersonCamEnabled)
+				{
+					continue;
+				}
 				Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 				Point3D cameraPosVec = firstPersonPlayer.playerCamera.eye;
 				shader.setEyePosition(cameraPosVec.x, cameraPosVec.y, cameraPosVec.z);
@@ -202,17 +206,27 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 				ModelMatrix.main.popMatrix();
 			}
 			else if(i == 2) {
-				//if(!thirdPersonCamEnabled) {
-				//	continue;
-				//}
-				Gdx.gl.glViewport(Gdx.graphics.getWidth()/2, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()/2);
+				if(!thirdPersonCamEnabled) {
+					continue;
+				}
+
+				Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+				//Clear viewport
+				/*
+				Gdx.gl.glEnable(GL20.GL_SCISSOR_TEST);
+				Gdx.gl.glScissor(Gdx.graphics.getWidth()/2, 0, Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2);
+				Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+				Gdx.gl.glDisable(GL20.GL_SCISSOR_TEST);
+				*/
+				
 				Point3D cameraPosVec = thirdPersonCam.eye;
 				shader.setEyePosition(cameraPosVec.x, cameraPosVec.y, cameraPosVec.z);
 				shader.setProjectionMatrix(thirdPersonCam.getProjectionMatrix());
 				shader.setViewMatrix(thirdPersonCam.getViewMatrix());
 				
 				ModelMatrix.main.pushMatrix();
-				ModelMatrix.main.addTranslation(firstPersonPlayer.playerCamera.eye.x, firstPersonPlayer.playerCamera.eye.z, firstPersonPlayer.playerCamera.eye.z);
+				ModelMatrix.main.addTranslation(firstPersonPlayer.playerCamera.eye.x, firstPersonPlayer.playerCamera.eye.y, firstPersonPlayer.playerCamera.eye.z);
 				ModelMatrix.main.addScale(0.5f,0.5f,0.5f);
 				shader.setModelMatrix(ModelMatrix.main.matrix);
 				FileModel.draw();
@@ -321,6 +335,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		}
 		if(keycode == Input.Keys.SPACE) {
 			orthographicCamEnabled = !orthographicCamEnabled;
+			thirdPersonCamEnabled = !thirdPersonCamEnabled;
 		}
 		return false;
 	}
