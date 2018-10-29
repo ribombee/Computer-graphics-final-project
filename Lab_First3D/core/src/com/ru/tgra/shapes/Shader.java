@@ -25,6 +25,8 @@ public class Shader {
 	public static int modelMatrixLoc;
 	public static int viewMatrixLoc;
 	public static int projectionMatrixLoc;
+	
+	private int globalAmbientLoc;
 
 	private int materialDiffuseLoc;
 	private int materialSpecularLoc;
@@ -74,6 +76,8 @@ public class Shader {
 		viewMatrixLoc			= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_viewMatrix");
 		projectionMatrixLoc		= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_projectionMatrix");
 		
+		globalAmbientLoc		= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_globalAmbient");
+		
 		materialDiffuseLoc		= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_materialDiffuse");
 		materialSpecularLoc		= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_materialSpecular");
 		materialShineLoc		= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_materialShine");
@@ -122,6 +126,11 @@ public class Shader {
 	public void setMaterialShine(float val)
 	{
 		Gdx.gl.glUniform1f(materialShineLoc, val);
+	}
+	
+	public void setGlobalAmbient(float a)
+	{
+		Gdx.gl.glUniform4f(globalAmbientLoc, a, a, a, 1);
 	}
 	
 	public int getVertexPointer()

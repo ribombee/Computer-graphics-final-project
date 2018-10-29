@@ -47,16 +47,15 @@ public class Camera {
 		n.set(t.x * s + n.x * c, t.y * s + n.y *c, t.z * s + n.z * c);
 	}
 	
-	public void globalYaw(float angle) {
+	public void rotateY(float angle) {
 		float radians = angle * (float)Math.PI / 180.0f;
 		
 		float c = (float)Math.cos(radians);
 		float s = -(float)Math.sin(radians);
 		
-		Vector3D t = new Vector3D(u.x, u.y, u.z);
-		
-		u.set(t.x * c, t.y * c, t.z * c - s);
-		n.set(t.x * s , t.y * s , t.z * s + c);
+		u.set(c * u.x - s * u.z, u.y, s * u.x + c * u.z);
+		v.set(c * v.x - s * v.z, v.y, s * v.x + c * v.z);
+		n.set(c * n.x - s * n.z, n.y, s * n.x + c * n.z);
 	}
 	
 	public void pitch(float angle) {
@@ -85,6 +84,7 @@ public class Camera {
 		eye.y += translatedDirection.y;
 		eye.z += translatedDirection.z;
 	}
+	
 	
 	public Vector3D GetTranslationVector(Vector3D direction) {
 		

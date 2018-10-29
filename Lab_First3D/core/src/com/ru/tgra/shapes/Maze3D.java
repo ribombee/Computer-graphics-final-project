@@ -35,6 +35,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 	public void create () {
 		
 		Gdx.input.setInputProcessor(this);
+		Gdx.input.setCursorCatched(true);
 		shader = new Shader();
 		
 		pointLights = new ArrayList<PointLight>();
@@ -59,6 +60,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		shader.setMaterialDiffuse(0.7f, 0.2f, 0, 1);
 		shader.setMaterialSpecular(0.7f, 0.2f, 0, 1);
 		shader.setMaterialShine(13);
+		shader.setGlobalAmbient(0.3f);
 		
 		int vertexPointer = shader.getVertexPointer();
 		int normalPointer = shader.getNormalPointer();
@@ -122,6 +124,11 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 	}
 	
 	private void update() {
+		
+		if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
+			System.exit(0);
+		}
+		
 		float deltaTime = Gdx.graphics.getDeltaTime();
 		
 		Vector3D playerMovement = new Vector3D(0,0,0);
@@ -139,6 +146,11 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 			playerMovement.x += 1;
 		}
 		if(!thirdPersonCamEnabled) {
+			
+			firstPersonPlayer.playerCamera.rotateY(-Gdx.input.getDeltaX()*0.2f);
+			firstPersonPlayer.playerCamera.pitch(Gdx.input.getDeltaY()*0.1f);
+			
+			/*
 			if(upDown) {
 				firstPersonPlayer.playerCamera.pitch(-0.8f);
 			}
@@ -146,17 +158,18 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 				firstPersonPlayer.playerCamera.pitch(0.8f);
 			}
 			if(leftDown) {
-				firstPersonPlayer.playerCamera.yaw(-1.6f);
+				firstPersonPlayer.playerCamera.rotateY(1.6f);
 			}
 			if(rightDown) {
-				firstPersonPlayer.playerCamera.yaw(1.6f);
+				firstPersonPlayer.playerCamera.rotateY(-1.6f);
 			}
-			if(qDown) {
+			if(qDown) {			
 				firstPersonPlayer.playerCamera.roll(0.4f);
 			}
 			if(eDown) {
 				firstPersonPlayer.playerCamera.roll(-0.4f);
 			}
+			*/
 		}
 		playerMovement.normalize();
 		firstPersonPlayer.move(playerMovement, maze.wallList);

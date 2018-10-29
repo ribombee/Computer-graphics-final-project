@@ -14,6 +14,7 @@ uniform mat4 u_projectionMatrix;
 
 uniform vec4 u_eyePosition;
 
+uniform vec4 u_globalAmbient;
 uniform vec4 u_lightPosition;
 uniform vec4 u_lightDiffuse;
 uniform vec4 u_lightSpecular;
@@ -117,6 +118,8 @@ void main()
 	for(int i = 0; i < 4; i++) {
 		v_light += pointLightCalculations(u_pointLights[i], position, normal, v);
 	}
+	
+	v_light += u_globalAmbient;
 	
 	v_light[3] = 1;
 	
