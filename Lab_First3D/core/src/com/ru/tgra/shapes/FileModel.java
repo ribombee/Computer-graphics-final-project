@@ -105,7 +105,8 @@ public class FileModel {
 		}
 	}
 	public static void draw() {
-
+		Shader.mainShader.setDiffuseTexture(null);
+		Shader.mainShader.setDiffuseTexture(null);
 		Gdx.gl.glVertexAttribPointer(vertexPointer, 3, GL20.GL_FLOAT, false, 0, vertexBuffer);
 		Gdx.gl.glVertexAttribPointer(normalPointer, 3, GL20.GL_FLOAT, false, 0, normalBuffer);
 

@@ -3,8 +3,14 @@ package com.ru.tgra.shapes;
 import java.nio.FloatBuffer;
 import java.util.List;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+
 public class MazeWall {
 	public Point3D position;
+	private Texture tex = new Texture(Gdx.files.internal("textures/cubemap_texture.png"));
+	private Texture spectex = new Texture(Gdx.files.internal("textures/cubemap_texture.png"));
+	
 	public float width;
 	public float height;
 	public float depth;
@@ -152,6 +158,6 @@ public class MazeWall {
 	}
 	
 	public void draw() {
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(tex, null);
 	}
 }

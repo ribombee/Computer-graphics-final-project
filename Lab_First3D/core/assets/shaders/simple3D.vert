@@ -6,6 +6,8 @@ precision mediump float;
 attribute vec3 a_position;
 attribute vec3 a_normal;
 
+attribute vec2 a_uvpos;
+
 uniform mat4 u_modelMatrix;
 uniform mat4 u_viewMatrix;
 uniform mat4 u_projectionMatrix;
@@ -25,6 +27,8 @@ varying vec4 v_diffuse;
 varying vec4 v_specular;
 
 varying vec4 v_light;
+
+varying vec2 v_uv;
 
 struct pointLight  {
 	vec4 position;
@@ -77,7 +81,7 @@ vec4 pointLightCalculations(pointLight light, vec4 pos, vec4 norm, vec4 v) {
 	diffuseDiff = lambert * light.diffuse * u_materialDiffuse;
 	diffuseDiff = diffuseDiff / distFactor;
 	
-	//pos = u_viewMatrix * pos;
+	pos = u_viewMatrix * pos;
 	
 	float phong = max(0, (dot(norm, h) / (length(norm)*length(h))));
 	
@@ -118,6 +122,6 @@ void main()
 	
 	position = u_viewMatrix * position;
 	
-	
+	v_uv = a_uvpos;
 	gl_Position = u_projectionMatrix * position;
 }

@@ -4,48 +4,93 @@ import java.nio.FloatBuffer;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.BufferUtils;
 
 public class BoxGraphic {
 
 	private static FloatBuffer vertexBuffer;
 	private static FloatBuffer normalBuffer;
+	private static FloatBuffer UVBuffer;
 	private static int vertexPointer;
 	private static int normalPointer;
+	private static int UVPointer;
 
-	public static void create(int vertexPointer, int normalPointer) {
+	public static void create(int vertexPointer, int normalPointer, int uvPointer) {
 		BoxGraphic.vertexPointer = vertexPointer;
 		BoxGraphic.normalPointer = normalPointer;
+		BoxGraphic.UVPointer = uvPointer;
 		//VERTEX ARRAY IS FILLED HERE
-		float[] vertexArray = {-0.5f, -0.5f, -0.5f,
+		float[] vertexArray = {-0.5f, -0.5f, -0.5f, //BACK
 						-0.5f, 0.5f, -0.5f,
 						0.5f, 0.5f, -0.5f,
 						0.5f, -0.5f, -0.5f,
-						-0.5f, -0.5f, 0.5f,
+						
+						-0.5f, -0.5f, 0.5f, //FRONT
 						-0.5f, 0.5f, 0.5f,
 						0.5f, 0.5f, 0.5f,
 						0.5f, -0.5f, 0.5f,
-						-0.5f, -0.5f, -0.5f,
+						
+						-0.5f, -0.5f, -0.5f, //BOTTOM
 						0.5f, -0.5f, -0.5f,
 						0.5f, -0.5f, 0.5f,
 						-0.5f, -0.5f, 0.5f,
-						-0.5f, 0.5f, -0.5f,
+						
+						-0.5f, 0.5f, -0.5f, //TOP
 						0.5f, 0.5f, -0.5f,
 						0.5f, 0.5f, 0.5f,
 						-0.5f, 0.5f, 0.5f,
-						-0.5f, -0.5f, -0.5f,
+						
+						-0.5f, -0.5f, -0.5f, //LEFT
 						-0.5f, -0.5f, 0.5f,
 						-0.5f, 0.5f, 0.5f,
 						-0.5f, 0.5f, -0.5f,
-						0.5f, -0.5f, -0.5f,
+						
+						0.5f, -0.5f, -0.5f, //RIGHT
 						0.5f, -0.5f, 0.5f,
 						0.5f, 0.5f, 0.5f,
 						0.5f, 0.5f, -0.5f};
-
+		
 		vertexBuffer = BufferUtils.newFloatBuffer(72);
 		vertexBuffer.put(vertexArray);
 		vertexBuffer.rewind();
-
+		
+		float[] UVArray = {
+				0.75f, 0.66f, //BACK
+				1.0f, 0.66f,
+				1.0f, 0.33f,
+				0.75f, 0.33f,
+				
+				0.25f, 0.66f, //FRONT
+				0.5f, 0.66f,
+				0.5f, 0.33f,
+				0.25f, 0.33f,
+				
+				0.25f, 0.33f, //BOTTOM
+				0.5f, 0.33f,
+				0.5f, 0,
+				0.25f, 0,
+				
+				0.25f, 1, //TOP
+				0.5f, 1,
+				0.5f, 0.66f,
+				0.25f, 0.66f,
+				
+				0, 0.66f, //LEFT
+				0.25f, 0.66f,
+				0.25f, 0.33f,
+				0, 0.33f,
+				
+				0.5f, 0.66f, //RIGHT
+				0.75f, 0.66f,
+				0.75f, 0.33f,
+				0.5f, 0.33f
+		};
+		
+		UVBuffer = BufferUtils.newFloatBuffer(48);
+		UVBuffer.put(UVArray);
+		UVBuffer.rewind();
+		
 		//NORMAL ARRAY IS FILLED HERE
 		float[] normalArray = {0.0f, 0.0f, -1.0f,
 							0.0f, 0.0f, -1.0f,
@@ -77,10 +122,15 @@ public class BoxGraphic {
 		normalBuffer.rewind();
 	}
 
-	public static void drawSolidCube() {
+	public static void drawSolidCube(Texture tex, Texture spectex) {
 
+		Shader.mainShader.setDiffuseTexture(tex);
+		Shader.mainShader.setSpecularTexture(spectex);
+		//System.out.println("UVP");
+		
 		Gdx.gl.glVertexAttribPointer(vertexPointer, 3, GL20.GL_FLOAT, false, 0, vertexBuffer);
 		Gdx.gl.glVertexAttribPointer(normalPointer, 3, GL20.GL_FLOAT, false, 0, normalBuffer);
+		Gdx.gl.glVertexAttribPointer(UVPointer, 2, GL20.GL_FLOAT, false, 0, UVBuffer);
 
 		Gdx.gl.glDrawArrays(GL20.GL_TRIANGLE_FAN, 0, 4);
 		Gdx.gl.glDrawArrays(GL20.GL_TRIANGLE_FAN, 4, 4);

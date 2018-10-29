@@ -62,8 +62,9 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		
 		int vertexPointer = shader.getVertexPointer();
 		int normalPointer = shader.getNormalPointer();
+		int UVPointer = shader.getUVPointer();
 		
-		BoxGraphic.create(vertexPointer, normalPointer);
+		BoxGraphic.create(vertexPointer, normalPointer, UVPointer);
 		SphereGraphic.create(vertexPointer, normalPointer);
 		SincGraphic.create(vertexPointer);
 		CoordFrameGraphic.create(vertexPointer);
@@ -197,7 +198,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 				ModelMatrix.main.addTranslation(5*5, 60, 0);
 				ModelMatrix.main.addScale(5,5,5);
 				shader.setModelMatrix(ModelMatrix.main.matrix);
-				FileModel.draw();
+				//FileModel.draw();
 				ModelMatrix.main.popMatrix();
 			}
 			else if (i == 1) {
@@ -237,7 +238,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 				ModelMatrix.main.addRotationY(90);
 				ModelMatrix.main.addScale(0.2f,0.2f,0.2f);
 				shader.setModelMatrix(ModelMatrix.main.matrix);
-				FileModel.draw();
+				//FileModel.draw();
 				ModelMatrix.main.popMatrix();
 			}
 
