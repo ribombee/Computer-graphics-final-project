@@ -95,8 +95,10 @@ public class Camera {
 		float delZ = direction.z;
 		
 		translationVector.x = delX*u.x + delY*v.x + delZ*n.x;
-		translationVector.y = 0;// delX*u.y + delY*v.y + delZ*n.y;
+		translationVector.y = 0;
 		translationVector.z = delX*u.z + delY*v.z + delZ*n.z;
+		translationVector.normalize();
+		translationVector.y = direction.y;
 		
 		return translationVector;
 	}

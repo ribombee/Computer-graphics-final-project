@@ -11,9 +11,13 @@ public class Player {
 	public float height;
 	public float depth;
 	
+	public float gravityFactor;
+	public float verticalVelocity;
+	private boolean grounded;
+	
 	public Player(float w, float h, float d) {
 		playerCamera = new Camera();
-		maxSpeed = 0.3f;
+		maxSpeed = 20f;
 		
 		width = w;
 		height = h;
@@ -26,15 +30,24 @@ public class Player {
 		playerCamera.translate(toStart);
 	}
 	
-	public void move(Vector3D speed, List<MazeWall> cubeObjects) {
-		speed.scale(maxSpeed);
-		speed = playerCamera.GetTranslationVector(speed);
-		speed = collides(speed, cubeObjects);
-		playerCamera.translate(speed);
+	public void jump(float initialVelocity) {
+		if(grounded)
+			verticalVelocity = initialVelocity;
+	}
+	
+	public void move(Vector3D direction, List<MazeWall> cubeObjects) {
+		verticalVelocity -= gravityFactor;
+		direction = playerCamera.GetTranslationVector(direction);
+		direction.scale(maxSpeed);
+		direction.add(new Vector3D(0,verticalVelocity,0));
+		direction.scale(Maze3D.deltaTime);
+		direction = collides(direction, cubeObjects);
+		playerCamera.translate(direction);
 	}
 	
 	private Vector3D collides(Vector3D speed, List<MazeWall> cubeObjects) {
-				
+		grounded = false;
+		float slack = 0.1f;
 		for(MazeWall cube : cubeObjects) {
 			boolean inXRange = false;
 			boolean inYRange = false;
@@ -60,7 +73,7 @@ public class Player {
 				float yDistance = position.y - cube.position.y;
 				float zDistance = position.z - cube.position.z;
 				
-				if(xDistance <= 0) {
+				if(xDistance < 0) {
 					xDistance += width / 2 + cube.width / 2;
 					if(xDistance <= speed.x) {
 						speed.x = -xDistance;
@@ -73,7 +86,7 @@ public class Player {
 					}
 				}
 				
-				if(yDistance <= 0) {
+				if(yDistance < 0) {
 					yDistance += height / 2 + cube.height / 2;
 					if(yDistance <= speed.y) {
 						speed.y = -yDistance;
@@ -83,10 +96,13 @@ public class Player {
 					yDistance -= height / 2 + cube.height / 2;
 					if(yDistance >= speed.y) {
 						speed.y = -yDistance;
+						//Player touched the ground
+						verticalVelocity = 0;
+						grounded = true;
 					}
 				}
 				
-				if(zDistance <= 0) {
+				if(zDistance < 0) {
 					zDistance += depth / 2 + cube.depth/2;
 					if(zDistance <= speed.z) {
 						speed.z = -zDistance;

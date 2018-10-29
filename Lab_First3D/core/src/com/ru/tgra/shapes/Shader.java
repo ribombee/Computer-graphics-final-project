@@ -9,10 +9,20 @@ import com.badlogic.gdx.graphics.Texture;
 public class Shader {
 	public static Shader mainShader;
 	public static FloatBuffer matrixBuffer;
+	public boolean usingWorldShader;
 
 	private int renderingProgramID;
 	private int vertexShaderID;
 	private int fragmentShaderID;
+	
+	private int skyboxProgramID;
+	private int skyboxVertID;
+	private int skyboxFragID;
+	private int skyboxTextureLoc;
+	private int skyboxPositionLoc;
+	private int skyboxUVLoc;
+	private int skyboxViewMatrixLoc;
+	private int skyboxProjectionMatrixLoc;
 
 	private int positionLoc;
 	private int normalLoc;
@@ -35,6 +45,7 @@ public class Shader {
 		
 	public Shader()
 	{
+		//Standard shader setup
 		String vertexShaderString;
 		String fragmentShaderString;
 
@@ -43,7 +54,7 @@ public class Shader {
 		
 		vertexShaderID = Gdx.gl.glCreateShader(GL20.GL_VERTEX_SHADER);
 		fragmentShaderID = Gdx.gl.glCreateShader(GL20.GL_FRAGMENT_SHADER);
-	
+		
 		Gdx.gl.glShaderSource(vertexShaderID, vertexShaderString);
 		Gdx.gl.glShaderSource(fragmentShaderID, fragmentShaderString);
 	
@@ -51,12 +62,38 @@ public class Shader {
 		Gdx.gl.glCompileShader(fragmentShaderID);
 
 		renderingProgramID = Gdx.gl.glCreateProgram();
-	
+		
 		Gdx.gl.glAttachShader(renderingProgramID, vertexShaderID);
 		Gdx.gl.glAttachShader(renderingProgramID, fragmentShaderID);
 	
 		Gdx.gl.glLinkProgram(renderingProgramID);
 		
+		
+		//Skybox shader setup
+		String skyboxVertString;
+		String skyboxFragString;
+
+		skyboxVertString = Gdx.files.internal("shaders/skybox.vert").readString();
+		skyboxFragString =  Gdx.files.internal("shaders/skybox.frag").readString();
+		
+		skyboxVertID = Gdx.gl.glCreateShader(GL20.GL_VERTEX_SHADER);
+		skyboxFragID = Gdx.gl.glCreateShader(GL20.GL_FRAGMENT_SHADER);
+		
+		Gdx.gl.glShaderSource(skyboxVertID, skyboxVertString);
+		Gdx.gl.glShaderSource(skyboxFragID, skyboxFragString);
+	
+		Gdx.gl.glCompileShader(skyboxVertID);
+		Gdx.gl.glCompileShader(skyboxFragID);
+
+		skyboxProgramID = Gdx.gl.glCreateProgram();	
+		
+		Gdx.gl.glAttachShader(skyboxProgramID, skyboxVertID);
+		Gdx.gl.glAttachShader(skyboxProgramID, skyboxFragID);
+	
+		Gdx.gl.glLinkProgram(skyboxProgramID);
+		
+		
+		//Standard shader pointer setup
 		uvLoc					= Gdx.gl.glGetAttribLocation(renderingProgramID, "a_uvpos");
 		Gdx.gl.glEnableVertexAttribArray(uvLoc);
 
@@ -83,7 +120,20 @@ public class Shader {
 		materialShineLoc		= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_materialShine");
 		eyePosLoc				= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_eyePosition");
 
+		//Skybox shader pointer shader
+		skyboxUVLoc				= Gdx.gl.glGetAttribLocation(skyboxProgramID, "a_uvpos");
+		Gdx.gl.glEnableVertexAttribArray(skyboxUVLoc);
+
+		skyboxPositionLoc		= Gdx.gl.glGetAttribLocation(skyboxProgramID, "a_position");
+		Gdx.gl.glEnableVertexAttribArray(skyboxPositionLoc);
+
+		skyboxProjectionMatrixLoc		= Gdx.gl.glGetUniformLocation(skyboxProgramID, "u_projectionMatrix");
+		skyboxViewMatrixLoc		= Gdx.gl.glGetUniformLocation(skyboxProgramID, "u_viewMatrix");
+		skyboxTextureLoc		= Gdx.gl.glGetUniformLocation(skyboxProgramID, "u_texture");
+		
+		
 		Gdx.gl.glUseProgram(renderingProgramID);
+		usingWorldShader = true;
 		mainShader = this;
 	}
 	
@@ -135,7 +185,14 @@ public class Shader {
 	
 	public int getVertexPointer()
 	{
-		return positionLoc;
+		if(usingWorldShader)
+		{
+			return positionLoc;
+		}
+		else
+		{
+			return skyboxPositionLoc;
+		}
 	}
 	
 	public int getNormalPointer()
@@ -145,7 +202,14 @@ public class Shader {
 	
 	public int getUVPointer()
 	{
-		return uvLoc;
+		if(usingWorldShader)
+		{
+			return uvLoc;
+		}
+		else
+		{
+			return skyboxUVLoc;
+		}
 	}
 	
 	public void setModelMatrix(FloatBuffer matrix)
@@ -155,25 +219,59 @@ public class Shader {
 	
 	public void setViewMatrix(FloatBuffer matrix)
 	{
-		Gdx.gl.glUniformMatrix4fv(viewMatrixLoc, 1, false, matrix);
+		if(usingWorldShader)
+		{
+			Gdx.gl.glUniformMatrix4fv(viewMatrixLoc, 1, false, matrix);
+		}
+		else
+		{
+			Gdx.gl.glUniformMatrix4fv(skyboxViewMatrixLoc, 1, false, matrix);
+		}
 	}
 	
 	public void setProjectionMatrix(FloatBuffer matrix)
 	{
-		Gdx.gl.glUniformMatrix4fv(projectionMatrixLoc, 1, false, matrix);
+		if(usingWorldShader)
+		{
+			Gdx.gl.glUniformMatrix4fv(projectionMatrixLoc, 1, false, matrix);
+		}
+		else
+		{
+			Gdx.gl.glUniformMatrix4fv(skyboxProjectionMatrixLoc, 1, false, matrix);
+		}
+	}
+	
+	public void useWorldShader()
+	{
+		usingWorldShader = true;
+		Gdx.gl.glUseProgram(renderingProgramID);
+	}
+	
+	public void useSkyboxShader()
+	{
+		usingWorldShader = false;
+		Gdx.gl.glUseProgram(skyboxProgramID);
 	}
 	
 	public void setDiffuseTexture(Texture tex)
 	{
-		if(tex == null)
+		if(usingWorldShader)
 		{
-			Gdx.gl.glUniform1i(usesDiffuseTextureLoc, 0);	
+			if(tex == null)
+			{
+				Gdx.gl.glUniform1i(usesDiffuseTextureLoc, 0);	
+			}
+			else
+			{
+				tex.bind(0);
+				Gdx.gl.glUniform1i(diffuseTextureLoc, 0);
+				Gdx.gl.glUniform1i(usesDiffuseTextureLoc, 1);	
+			}
 		}
 		else
 		{
 			tex.bind(0);
-			Gdx.gl.glUniform1i(diffuseTextureLoc, 0);
-			Gdx.gl.glUniform1i(usesDiffuseTextureLoc, 1);	
+			Gdx.gl.glUniform1i(skyboxTextureLoc, 0);
 		}
 	}
 	

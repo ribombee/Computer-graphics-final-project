@@ -14,6 +14,7 @@ import java.util.List;
 import com.badlogic.gdx.utils.BufferUtils;
 
 public class Maze3D extends ApplicationAdapter implements InputProcessor {
+	public static float deltaTime;
 	private Shader shader;
 	
 	private Player firstPersonPlayer;
@@ -29,7 +30,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 	
 	private List<PointLight> pointLights;
 	private DirectionalLight dirLight;
-	
+	private Skybox skybox;
 	Maze maze;
 	@Override
 	public void create () {
@@ -84,13 +85,14 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		
 		maze = new Maze(mazeWidth, mazeWidth);
 
-		firstPersonPlayer = new Player(3,3,3);
+		firstPersonPlayer = new Player(3,7,3);
+		firstPersonPlayer.gravityFactor = 0.3f;
 
-		firstPersonPlayer.playerCamera.PerspctiveProjection3D(80, 1, 1, 150);
+		firstPersonPlayer.playerCamera.PerspctiveProjection3D(80, 1, 1, 400);
 		
 		firstPersonPlayer.moveToStart(maze.playerStartPosition);
-		//firstPersonPlayer.move(new Vector3D(2f, 15, 10f), maze.wallList);
 		firstPersonPlayer.playerCamera.LookAt(new Point3D(0,0,0), new Vector3D(0,1,0));
+		firstPersonPlayer.move(new Vector3D(0,50,0), new ArrayList<MazeWall>());
 		
 		orthographicCam = new Camera();
 		orthographicCam.OrthographicProjection3D(-(mazeWidth*maze.blockWidth+10), (mazeWidth*maze.blockWidth+10), -(mazeWidth*maze.blockHeight+10), (mazeWidth*maze.blockHeight+10), 1, 250);
@@ -101,6 +103,8 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		thirdPersonCam.PerspctiveProjection3D(70, 1, 1f, 180);
 		thirdPersonCam.eye.set(firstPersonPlayer.playerCamera.eye.x + 10, firstPersonPlayer.playerCamera.eye.y + 10, firstPersonPlayer.playerCamera.eye.z + 10);
 		thirdPersonCam.LookAt(firstPersonPlayer.playerCamera.eye, new Vector3D(0, 1, 0));
+		
+		skybox = new Skybox();
 	}
 
 	private void input()
@@ -126,10 +130,10 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 	private void update() {
 		
 		if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
-			System.exit(0);
+			Gdx.app.exit();
 		}
 		
-		float deltaTime = Gdx.graphics.getDeltaTime();
+		deltaTime = Gdx.graphics.getDeltaTime();
 		
 		Vector3D playerMovement = new Vector3D(0,0,0);
 		
@@ -213,6 +217,12 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 				shader.setModelMatrix(ModelMatrix.main.matrix);
 				//FileModel.draw();
 				ModelMatrix.main.popMatrix();
+				
+				ModelMatrix.main.pushMatrix();
+				ModelMatrix.main.addScale(skybox.size.x,skybox.size.y,skybox.size.z);
+				shader.setModelMatrix(ModelMatrix.main.matrix);
+				skybox.draw();
+				ModelMatrix.main.popMatrix();
 			}
 			else if (i == 1) {
 				if(!orthographicCamEnabled) {
@@ -246,13 +256,13 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 				ModelMatrix.main.pushMatrix();
 				ModelMatrix.main.addTranslation(firstPersonPlayer.playerCamera.eye.x, firstPersonPlayer.playerCamera.eye.y, firstPersonPlayer.playerCamera.eye.z);
 
-				//ModelMatrix.main.addRotationX(180);
 				ModelMatrix.main.addRotationZ(90);
 				ModelMatrix.main.addRotationY(90);
 				ModelMatrix.main.addScale(0.2f,0.2f,0.2f);
 				shader.setModelMatrix(ModelMatrix.main.matrix);
 				//FileModel.draw();
 				ModelMatrix.main.popMatrix();
+			
 			}
 
 			
@@ -350,9 +360,12 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 			eDown = false;
 		}
 		if(keycode == Input.Keys.SPACE) {
+			/*
 			orthographicCamEnabled = !orthographicCamEnabled;
 			thirdPersonCamEnabled = !thirdPersonCamEnabled;
 			firstPersonPlayer.playerCamera.LookAt(new Point3D(firstPersonPlayer.playerCamera.eye.x - 5, firstPersonPlayer.playerCamera.eye.y, firstPersonPlayer.playerCamera.eye.z), new Vector3D(0,1,0));
+			*/
+			firstPersonPlayer.jump(20);
 		}
 		return false;
 	}
