@@ -154,26 +154,6 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 			firstPersonPlayer.playerCamera.rotateY(-Gdx.input.getDeltaX()*0.2f);
 			firstPersonPlayer.playerCamera.pitch(Gdx.input.getDeltaY()*0.1f);
 			
-			/*
-			if(upDown) {
-				firstPersonPlayer.playerCamera.pitch(-0.8f);
-			}
-			if(downDown) {
-				firstPersonPlayer.playerCamera.pitch(0.8f);
-			}
-			if(leftDown) {
-				firstPersonPlayer.playerCamera.rotateY(1.6f);
-			}
-			if(rightDown) {
-				firstPersonPlayer.playerCamera.rotateY(-1.6f);
-			}
-			if(qDown) {			
-				firstPersonPlayer.playerCamera.roll(0.4f);
-			}
-			if(eDown) {
-				firstPersonPlayer.playerCamera.roll(-0.4f);
-			}
-			*/
 		}
 		playerMovement.normalize();
 		firstPersonPlayer.move(playerMovement, maze.wallList);
@@ -192,6 +172,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		
 		thirdPersonCam.eye.set(firstPersonPlayer.playerCamera.eye.x + 10, firstPersonPlayer.playerCamera.eye.y + 20, firstPersonPlayer.playerCamera.eye.z);
 		thirdPersonCam.LookAt(firstPersonPlayer.playerCamera.eye, new Vector3D(0, 1, 0));
+		skybox.position.set(firstPersonPlayer.playerCamera.eye.x, firstPersonPlayer.playerCamera.eye.y, firstPersonPlayer.playerCamera.eye.z);
 		
 	}
 	
@@ -219,6 +200,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 				ModelMatrix.main.popMatrix();
 				
 				ModelMatrix.main.pushMatrix();
+				ModelMatrix.main.addTranslation(skybox.position.x, skybox.position.y, skybox.position.z);
 				ModelMatrix.main.addScale(skybox.size.x,skybox.size.y,skybox.size.z);
 				shader.setModelMatrix(ModelMatrix.main.matrix);
 				skybox.draw();

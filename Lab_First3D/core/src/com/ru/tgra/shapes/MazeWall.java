@@ -151,6 +151,7 @@ public class MazeWall {
 		red = r;
 		green = g;
 		blue = b;
+		
 	}
 	
 	public void setShine(float s) {
