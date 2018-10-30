@@ -6,6 +6,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
+import com.flowpowered.noise.NoiseQuality;
+import com.flowpowered.noise.module.source.Perlin;
+
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
@@ -25,6 +28,8 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 	boolean thirdPersonCamEnabled = false;
 	private boolean wDown, aDown, sDown, dDown, upDown, downDown, leftDown, rightDown, qDown, eDown;
 	
+	
+	private World world;
 	private List<MazeWall> walls; 
 	MazeWall movingWall;
 	
@@ -38,6 +43,9 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		Gdx.input.setInputProcessor(this);
 		Gdx.input.setCursorCatched(true);
 		shader = new Shader();
+		
+		world = new World(20,20);
+		walls = world.blockList;
 		
 		pointLights = new ArrayList<PointLight>();
 		
@@ -92,7 +100,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		
 		firstPersonPlayer.moveToStart(maze.playerStartPosition);
 		firstPersonPlayer.playerCamera.LookAt(new Point3D(0,0,0), new Vector3D(0,1,0));
-		firstPersonPlayer.move(new Vector3D(0,50,0), new ArrayList<MazeWall>());
+		firstPersonPlayer.move(new Vector3D(0,100,0), new ArrayList<MazeWall>());
 		
 		orthographicCam = new Camera();
 		orthographicCam.OrthographicProjection3D(-(mazeWidth*maze.blockWidth+10), (mazeWidth*maze.blockWidth+10), -(mazeWidth*maze.blockHeight+10), (mazeWidth*maze.blockHeight+10), 1, 250);
@@ -249,6 +257,15 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 
 			
 			for(MazeWall wall : maze.wallList) {
+				if(wall == null) {
+					continue;
+				}
+				shader.setMaterialDiffuse(wall.red, wall.green, wall.blue, 1);	
+				shader.setModelMatrix(wall.getModelMatrix());
+				wall.draw();	
+			}
+			
+			for(MazeWall wall : walls) {
 				if(wall == null) {
 					continue;
 				}
