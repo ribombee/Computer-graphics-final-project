@@ -73,46 +73,77 @@ public class Player {
 				float yDistance = position.y - cube.position.y;
 				float zDistance = position.z - cube.position.z;
 				
-				if(xDistance < 0) {
+				boolean collidingX = false, collidingY = false, collidingZ = false;
+				
+				if(xDistance <= 0) {
 					xDistance += width / 2 + cube.width / 2;
 					if(xDistance <= speed.x) {
-						speed.x = -xDistance;
+						collidingX = true;
+						//speed.x = -xDistance;
 					}
 				}
 				else {
+					//PROBLEMATIC AREA
 					xDistance -= width / 2 + cube.width / 2;
-					if(xDistance >= speed.x) {
-						speed.x = -xDistance;
+					if(xDistance > speed.x) {
+						System.out.println("X Collision");
+						collidingX = true;
+						//speed.x = -xDistance;
 					}
 				}
 				
-				if(yDistance < 0) {
+				if(yDistance <= 0) {
 					yDistance += height / 2 + cube.height / 2;
 					if(yDistance <= speed.y) {
-						speed.y = -yDistance;
+						collidingY = true;
+						//speed.y = -yDistance;
 					}
 				}
 				else {
 					yDistance -= height / 2 + cube.height / 2;
 					if(yDistance >= speed.y) {
-						speed.y = -yDistance;
+						collidingY = true;
+						//speed.y = -yDistance;
 						//Player touched the ground
 						verticalVelocity = 0;
 						grounded = true;
 					}
 				}
 				
-				if(zDistance < 0) {
+				if(zDistance <= 0) {
 					zDistance += depth / 2 + cube.depth/2;
 					if(zDistance <= speed.z) {
-						speed.z = -zDistance;
+						collidingZ = true;
+						System.out.println("Z Collision front, " + speed.x + " " + speed.y + " " + speed.z + " " + -zDistance);
+						//speed.z = -zDistance;
 					}
 				}
 				else {
+					//PROBLEMATIC AREA
 					zDistance -= depth / 2 + cube.depth/2;
-					if(zDistance >= speed.z) {
-						speed.z = -zDistance;
+					if(zDistance > speed.z) {
+						collidingZ = true;
+						System.out.println("Z Collision back, " + speed.x + " " + speed.y + " " + speed.z + " " + -zDistance);
+						//speed.z = -zDistance;
 					}
+				}
+				
+				float highestAxis = -1;
+				if(collidingX)
+					highestAxis = Math.max(Math.abs(xDistance), highestAxis);
+				if(collidingY)
+					highestAxis = Math.max(Math.abs(yDistance), highestAxis);
+				if(collidingZ)
+					highestAxis = Math.max(Math.abs(zDistance), highestAxis);
+				
+				if(highestAxis == xDistance ) {
+					speed.x = -xDistance;
+				}
+				else if(highestAxis == yDistance) {
+					speed.y = -yDistance;
+				}
+				else if(highestAxis == zDistance) {
+					speed.z = -zDistance;
 				}
 			}
 		}

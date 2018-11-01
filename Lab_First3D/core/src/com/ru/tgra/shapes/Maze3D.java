@@ -39,7 +39,9 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 	Maze maze;
 	@Override
 	public void create () {
-		
+		//TODO: fix backculling
+		//Gdx.gl.glEnable(GL20.GL_CULL_FACE);
+		//Gdx.gl.glCullFace(GL20.GL_BACK);
 		Gdx.input.setInputProcessor(this);
 		Gdx.input.setCursorCatched(true);
 		shader = new Shader();
@@ -265,14 +267,14 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 				wall.draw();	
 			}
 			
-			for(MazeWall wall : walls) {
+			/*for(MazeWall wall : walls) {
 				if(wall == null) {
 					continue;
 				}
 				shader.setMaterialDiffuse(wall.red, wall.green, wall.blue, 1);	
 				shader.setModelMatrix(wall.getModelMatrix());
-				wall.draw();	
-			}
+				wall.draw();
+			}*/
 		}
 	}
 
