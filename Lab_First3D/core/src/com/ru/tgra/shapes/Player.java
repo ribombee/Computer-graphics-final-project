@@ -19,9 +19,9 @@ public class Player {
 	
 	private ArrayList<MazeWall> collisionBuffer;
 	
-	public Player(float w, float h, float d) {
+	public Player(float w, float h, float d, float speed) {
 		playerCamera = new Camera();
-		maxSpeed = 20f;
+		maxSpeed = speed;
 		
 		width = w;
 		height = h;

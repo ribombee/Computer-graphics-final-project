@@ -36,6 +36,8 @@ public class Shader {
 	private int materialShineLoc;
 	private int eyePosLoc;
 	
+	private int alphaLoc;
+	
 	Texture currentTexture;
 		
 	public Shader()
@@ -91,8 +93,8 @@ public class Shader {
 		materialShineLoc		= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_materialShine");
 		eyePosLoc				= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_eyePosition");		
 		renderingSkyboxLoc 		= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_renderingSkybox");
+		alphaLoc 				= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_alpha");
 		
-		System.out.println("renderingSkyboxLoc: " + renderingSkyboxLoc);
 		
 		Gdx.gl.glUseProgram(renderingProgramID);
 		usingWorldShader = true;
@@ -219,5 +221,9 @@ public class Shader {
 			//Gdx.gl.glUniform1i(specTextureLoc, 0);
 			//Gdx.gl.glUniform1i(usesSpecularTextureLoc, 1);	
 		}
+	}
+	
+	public void setAlpha(float alpha) {
+		Gdx.gl.glUniform1f(alphaLoc, alpha);
 	}
 }

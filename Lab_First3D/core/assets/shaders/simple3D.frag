@@ -12,6 +12,7 @@ uniform int u_renderingSkybox;
 
 uniform int u_usesDiffuseTexture;
 uniform sampler2D u_diffuseTexture;
+uniform float u_alpha;
 
 //uniform int u_usesSpecularTexture;
 //uniform sampler2D u_specularTexture;
@@ -20,10 +21,12 @@ void main()
 	if(u_renderingSkybox == 1)
 	{
 		gl_FragColor = texture2D(u_diffuseTexture, v_uv);
+		gl_FragColor.a = u_alpha;
 	}
 	else if(u_usesDiffuseTexture == 1)
 	{
 		gl_FragColor = v_light * texture2D(u_diffuseTexture, v_uv);
+		gl_FragColor.a = u_alpha;
 	}
 	else
 	{
