@@ -47,40 +47,112 @@ public class Player {
 		playerCamera.translate(direction);
 	}
 	
+	private boolean collision(MazeWall cube, Vector3D speed) {
+		boolean inXRange = false;
+		boolean inYRange = false;
+		boolean inZRange = false;
+
+		Point3D position = playerCamera.eye;
+		
+		if(cube.position.x + cube.width/2 > position.x + speed.x- width/2 && cube.position.x - cube.width/2 < position.x + speed.x + width/2) {
+			inXRange = true;
+		}
+		
+		if(cube.position.y + cube.height/2 > position.y + speed.y- height/2 && cube.position.y - cube.height/2 < position.y + speed.y + height/2) {
+			inYRange = true;
+		}
+		
+		if(cube.position.z + cube.depth/2 > position.z + speed.z- depth/2 && cube.position.z - cube.depth/2 < position.z + speed.z + depth/2) {
+			inZRange = true;
+		}
+		
+		return (inXRange && inZRange && inYRange);
+	}
+	
+	private float resolveAxisCollision(Vector3D speed, MazeWall cube, char axis) {
+		float position, distance, playerAxisSize, cubeAxisSize, axisSpeed;
+		if(axis == 'x') {
+			position = playerCamera.eye.x;
+			distance = position - cube.position.x;
+			playerAxisSize = width/2;
+			cubeAxisSize = cube.width/2;
+			axisSpeed = speed.x;
+		}
+		else if(axis == 'y') {
+			position = playerCamera.eye.y;
+			distance = position - cube.position.y;
+			playerAxisSize = height/2;
+			cubeAxisSize = cube.height/2;
+			axisSpeed = speed.y;
+		}
+		else if(axis == 'z') {
+			position = playerCamera.eye.z;
+			distance = position - cube.position.z;
+			playerAxisSize = depth/2;
+			cubeAxisSize = cube.depth/2;
+			axisSpeed = speed.z;
+		}
+		else {
+			return 0;
+		}
+		if(distance <= 0) {
+			distance += playerAxisSize + cubeAxisSize;
+			if(distance <= axisSpeed) {
+				if(axis == 'y') {
+					verticalVelocity = 0;
+				}
+				//System.out.println("Testing1");
+				return -distance;
+			}
+		}
+		else {
+			distance -= playerAxisSize + cubeAxisSize;
+			if(distance >= axisSpeed) {
+				if(axis == 'y') {
+					verticalVelocity = 0;
+					grounded = true;
+				}
+				//System.out.println("Testing2");
+				return -distance;
+			}
+		}
+		//System.out.println("Testing3");
+		return axisSpeed;
+	}
 	private Vector3D collides(Vector3D speed, List<MazeWall> cubeObjects) {
 		grounded = false;
 		Point3D position = playerCamera.eye;
 		ArrayList<MazeWall> collidingWalls = new ArrayList<MazeWall>();
 		for(MazeWall cube : cubeObjects) {
-			boolean inXRange = false;
-			boolean inYRange = false;
-			boolean inZRange = false;
-			
-			if(cube.position.x + cube.width/2 > position.x + speed.x- width/2 && cube.position.x - cube.width/2 < position.x + speed.x + width/2) {
-				inXRange = true;
-			}
-			
-			if(cube.position.y + cube.height/2 > position.y + speed.y- height/2 && cube.position.y - cube.height/2 < position.y + speed.y + height/2) {
-				inYRange = true;
-			}
-			
-			if(cube.position.z + cube.depth/2 > position.z + speed.z- depth/2 && cube.position.z - cube.depth/2 < position.z + speed.z + depth/2) {
-				inZRange = true;
-			}
-			
-			if(inXRange && inZRange && inYRange) {
+			if(collision(cube, speed))
 				collidingWalls.add(cube);
-			}
 		}
 		
-		/*
+		
 		Comparator<MazeWall> playerDist = (MazeWall a, MazeWall b) -> {
 			float aDist = new Vector3D(a.position.x - position.x, a.position.y - position.y, a.position.z - position.z).length();
 			float bDist = new Vector3D(b.position.x - position.x, b.position.y - position.y, b.position.z - position.z).length();
-		    return aDist < bDist ? -1 : 1;
+		    return aDist >= bDist ? 1 : -1;
 		};
-		*/
-		//collidingWalls.sort(playerDist);
+		
+		collidingWalls.sort(playerDist);
+		for(MazeWall cube : collidingWalls) {
+			if(collision(cube, speed)) {
+				//Resolve for Y-axis
+				speed.y = resolveAxisCollision(speed, cube, 'y');
+			}
+			if(collision(cube, speed)) {
+				//Resolve for X-axis
+				speed.x = resolveAxisCollision(speed, cube, 'x');
+			}
+			if(collision(cube, speed)) {
+				//Resolve for Z-axis
+				speed.z = resolveAxisCollision(speed, cube, 'z');
+			}
+		}
+		collidingWalls.clear();
+		return speed;
+		/*
 		for(MazeWall cube : collidingWalls) {
 			//Negative distance = behind, Positive distance = in front
 			float xDistance = position.x - cube.position.x;
@@ -161,6 +233,7 @@ public class Player {
 			}
 		}
 		return speed;
+		*/
 	}
 	
 }

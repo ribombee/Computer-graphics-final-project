@@ -23,7 +23,7 @@ public class ModelTest {
 		bobModel = assets.get("models/bob/bob.g3dj");
 		BoundingBox bb = new BoundingBox();
 		bobModel.meshes.first().calculateBoundingBox(bb, 0, 40);
-		System.out.println("testing model loading: " + bobModel.materials.first().get(TextureAttribute.Diffuse));
+		System.out.println("testing model loading: " + bobModel.meshes.first());
 		System.out.println("more model testing: " + bobModel.nodes.get(4).id);
 		ModelInstance md = new ModelInstance(bobModel);
 		//md.getMaterial("test").get(0).
