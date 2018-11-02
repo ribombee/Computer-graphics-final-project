@@ -189,9 +189,9 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 			pL.updateShaderValues();
 		}
 		
-		if(firstPersonPlayer.playerCamera.eye.z / world.blockDepth > world.currentZGenerationIndex - 1)
+		if(firstPersonPlayer.playerCamera.eye.z / world.blockDepth > world.currentZGenerationIndex - 200)
 		{
-			world.addAdditionalZ(1);
+			world.addAdditionalZ(30);
 		}
 		
 		deathWall.move(deltaTime);
@@ -282,17 +282,16 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 				
 				boolean willBeRendered = wall.position.z > deathWall.position.z;
 				
-				//willBeRendered = willBeRendered && wall.position.z > firstPersonPlayer.playerCamera.eye.z + 300;
+				willBeRendered = willBeRendered && wall.position.z < firstPersonPlayer.playerCamera.eye.z + 200;
 				
 				if(willBeRendered)
 				{
-					shader.setMaterialDiffuse(wall.red, wall.green, wall.blue, 1);	
+					//shader.setMaterialDiffuse(wall.red, wall.green, wall.blue, 1);	
 					shader.setModelMatrix(wall.getModelMatrix());
 					wall.draw();
 				}
 			}
 			
-			//Obstacles in world
 			for(Obstacle pillar : world.obstacles) {
 				if(pillar == null) {
 					continue;
