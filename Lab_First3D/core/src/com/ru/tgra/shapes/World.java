@@ -17,6 +17,7 @@ public class World {
 	public int currentZGenerationIndex;
 		
 	public ArrayList<MazeWall> blockList; //This is the base terrain of the world.
+	
 	public ArrayList<Obstacle> obstacles;
 	
 	int heightMap[][];

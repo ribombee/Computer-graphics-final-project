@@ -35,6 +35,8 @@ public class Shader {
 	private int materialSpecularLoc;
 	private int materialShineLoc;
 	private int eyePosLoc;
+	
+	Texture currentTexture;
 		
 	public Shader()
 	{
@@ -190,11 +192,16 @@ public class Shader {
 	{
 		if(tex == null)
 		{
+			currentTexture = null;
 			Gdx.gl.glUniform1i(usesDiffuseTextureLoc, 0);	
 		}
 		else
 		{
-			tex.bind(0);
+			if(currentTexture != tex) {
+				tex.bind(0);
+				currentTexture = tex;
+			}
+			
 			Gdx.gl.glUniform1i(diffuseTextureLoc, 0);
 			Gdx.gl.glUniform1i(usesDiffuseTextureLoc, 1);	
 		}

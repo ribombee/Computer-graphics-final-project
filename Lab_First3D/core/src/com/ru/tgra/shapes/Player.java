@@ -17,6 +17,8 @@ public class Player {
 	public float verticalVelocity;
 	private boolean grounded;
 	
+	private ArrayList<MazeWall> collisionBuffer;
+	
 	public Player(float w, float h, float d) {
 		playerCamera = new Camera();
 		maxSpeed = 20f;
@@ -24,6 +26,9 @@ public class Player {
 		width = w;
 		height = h;
 		depth = d;
+		
+		collisionBuffer = new ArrayList<MazeWall>(8);
+		collisionBuffer.ensureCapacity(8);
 	}
 	
 	public void moveToStart(Point3D start) {
@@ -122,11 +127,14 @@ public class Player {
 	private Vector3D collides(Vector3D speed, List<MazeWall> cubeObjects) {
 		grounded = false;
 		Point3D position = playerCamera.eye;
-		ArrayList<MazeWall> collidingWalls = new ArrayList<MazeWall>();
+		int wallCollisionCounter = 0;
 		for(MazeWall cube : cubeObjects) {
-			if(collision(cube, speed))
-				collidingWalls.add(cube);
+			if(collision(cube, speed) && wallCollisionCounter < 8)
+			{
+				collisionBuffer.add(cube);
+			}
 		}
+		
 		
 		
 		Comparator<MazeWall> playerDist = (MazeWall a, MazeWall b) -> {
@@ -135,8 +143,8 @@ public class Player {
 		    return aDist >= bDist ? 1 : -1;
 		};
 		
-		collidingWalls.sort(playerDist);
-		for(MazeWall cube : collidingWalls) {
+		collisionBuffer.sort(playerDist);
+		for(MazeWall cube : collisionBuffer) {
 			if(collision(cube, speed)) {
 				//Resolve for Y-axis
 				speed.y = resolveAxisCollision(speed, cube, 'y');
@@ -150,7 +158,8 @@ public class Player {
 				speed.z = resolveAxisCollision(speed, cube, 'z');
 			}
 		}
-		collidingWalls.clear();
+		collisionBuffer.clear();
+		
 		return speed;
 		/*
 		for(MazeWall cube : collidingWalls) {
