@@ -13,6 +13,8 @@ public class World {
 	
 	public int baseHeight = 0;
 	
+	public int currentZGenerationIndex;
+		
 	public ArrayList<MazeWall> blockList;
 	
 	int heightMap[][];
@@ -28,14 +30,16 @@ public class World {
 		
 		width = xSize;
 		depth = zSize;
+		currentZGenerationIndex = 0;
 		
 		heightMap = new int[width][depth];
 		blockList = new ArrayList<MazeWall>(width*depth);
-		generateHeightMap();
+		generateInitialHeightMap();
 	}
 	
-	private void generateHeightMap()
+	private void generateInitialHeightMap()
 	{
+		/*
 		for(int x = 0; x < width; x++)
 		{
 			for(int z = 0; z < depth; z++)
@@ -46,11 +50,38 @@ public class World {
 				{
 					MazeWall stillBlock = new MazeWall(new Point3D(x*blockWidth, i*blockHeight, z*blockDepth), blockWidth, blockHeight, blockDepth);
 					stillBlock.setColor(0.3f, 0.5f, 0.2f);
+					if(i + 1 == heightMap[x][z]) {
+						stillBlock.useTopTexture();
+					}
 					blockList.add(stillBlock);
 				}
 				System.out.print(heightNoise+ ", ");
 			}
 			System.out.println("");
 		}
+		*/
+		addAdditionalZ(depth);
+	}
+	
+	public void addAdditionalZ(int zToAdd)
+	{	
+		for(int x = 0; x < width; x++)
+		{
+			for(int z = currentZGenerationIndex; z < currentZGenerationIndex + zToAdd; z++) 
+			{
+				int heightNoise = (int)Math.round((noise.getValue(x, z, 0.0)*50 -45));
+				for(int i = baseHeight; i < heightNoise; i++)
+				{
+					MazeWall stillBlock = new MazeWall(new Point3D(x*blockWidth, i*blockHeight, z*blockDepth), blockWidth, blockHeight, blockDepth);
+					stillBlock.setColor(0.3f, 0.5f, 0.2f);
+					if(i + 1 == heightNoise) {
+						stillBlock.useTopTexture();
+					}
+					blockList.add(stillBlock);
+				}
+			}
+		}
+		System.out.println("Just added!");
+		currentZGenerationIndex += zToAdd;
 	}
 }

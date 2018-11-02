@@ -30,7 +30,6 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 	
 	
 	private World world;
-	private List<MazeWall> walls; 
 	MazeWall movingWall;
 	
 	private List<PointLight> pointLights;
@@ -47,7 +46,6 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		shader = new Shader();
 		
 		world = new World(5,200);
-		walls = world.blockList;
 		
 		pointLights = new ArrayList<PointLight>();
 		
@@ -166,9 +164,9 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 			
 		}
 		playerMovement.normalize();
-		firstPersonPlayer.move(playerMovement, walls);
+		firstPersonPlayer.move(playerMovement, world.blockList);
 		
-		for(MazeWall wall : walls) {
+		for(MazeWall wall : world.blockList) {
 			//NOTE THIS DOES NOTHING WITHOUT MOVING WALLS
 			if(wall == null) {
 				continue;
@@ -179,6 +177,11 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		for(PointLight pL : pointLights) {
 			pL.move(deltaTime);
 			pL.updateShaderValues();
+		}
+		
+		if(firstPersonPlayer.playerCamera.eye.z / world.blockDepth > world.currentZGenerationIndex - 1)
+		{
+			world.addAdditionalZ(1);
 		}
 		
 		thirdPersonCam.eye.set(firstPersonPlayer.playerCamera.eye.x + 10, firstPersonPlayer.playerCamera.eye.y + 20, firstPersonPlayer.playerCamera.eye.z);
@@ -268,7 +271,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 				wall.draw();	
 			}*/
 			
-			for(MazeWall wall : walls) {
+			for(MazeWall wall : world.blockList) {
 				if(wall == null) {
 					continue;
 				}

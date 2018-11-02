@@ -8,8 +8,11 @@ import com.badlogic.gdx.graphics.Texture;
 
 public class MazeWall {
 	public Point3D position;
-	private static Texture tex = null;
-	private static Texture spectex = null;
+	private Texture tex = null;
+	private Texture specTex = null;
+	
+	private static Texture baseTex = null;
+	private static Texture topTex = null;
 	
 	public float width;
 	public float height;
@@ -29,11 +32,15 @@ public class MazeWall {
 	private Vector3D velocity;
 	
 	public MazeWall(Point3D p, float w, float h, float d) {
-		if(tex == null)
+		if(baseTex == null)
 		{
-			tex = new Texture(Gdx.files.internal("textures/cubemap_texture.png"));
-			spectex = new Texture(Gdx.files.internal("textures/cubemap_texture.png"));
+			//Texture loading
+			baseTex = new Texture(Gdx.files.internal("textures/base_texture.png"));
+			topTex = new Texture(Gdx.files.internal("textures/top_texture.png"));
 		}
+		tex = baseTex;
+		specTex = baseTex;
+		
 		position = p;
 		width = w;
 		height = h;
@@ -47,13 +54,22 @@ public class MazeWall {
 		moving = false;
 	}
 	
+	public void useTopTexture() {
+		tex = topTex;
+		specTex = topTex;
+	}
+	
 	//For a moving wall
 	public MazeWall(Point3D a, Point3D b, float w, float h, float d, float s) {
-		if(tex == null)
+		if(baseTex == null)
 		{
-			tex = new Texture(Gdx.files.internal("textures/cubemap_texture.png"));
-			spectex = new Texture(Gdx.files.internal("textures/cubemap_texture.png"));
+			//Texture loading
+			baseTex = new Texture(Gdx.files.internal("textures/base_texture.png"));
+			topTex = new Texture(Gdx.files.internal("textures/top_texture.png"));
 		}
+		tex = baseTex;
+		specTex = baseTex;
+		
 		position = a; //We start in point a
 		posA = new Point3D(0,0,0);
 		posA.set(a.x, a.y, a.z);
