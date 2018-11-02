@@ -37,13 +37,24 @@ public class Player {
 			verticalVelocity = initialVelocity;
 	}
 	
-	public void move(Vector3D direction, List<MazeWall> cubeObjects) {
+	public void move(Vector3D direction, World world) {
 		verticalVelocity -= gravityFactor;
 		direction = playerCamera.GetTranslationVector(direction);
 		direction.scale(maxSpeed);
 		direction.add(new Vector3D(0,verticalVelocity,0));
 		direction.scale(Maze3D.deltaTime);
-		direction = collides(direction, cubeObjects);
+		
+		boolean groundedOnAny = false;
+		direction = collides(direction, world.blockList);
+		groundedOnAny = groundedOnAny || grounded;
+		
+		for(Obstacle pillar : world.obstacles) {
+			direction = collides(direction, pillar.blockList);
+			groundedOnAny = groundedOnAny || grounded;
+		}
+		
+		grounded = groundedOnAny;
+		
 		playerCamera.translate(direction);
 	}
 	

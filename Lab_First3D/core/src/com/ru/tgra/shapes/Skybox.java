@@ -10,14 +10,14 @@ public class Skybox {
 	
 	public Skybox()
 	{
-		skyTexture = new Texture(Gdx.files.internal("textures/miramar_large.png"));
+		skyTexture = new Texture(Gdx.files.internal("textures/skybox.png"));
 		size = new Vector3D(400,400,400);
 		position = new Point3D(0,0,0);
 	}
 	
 	public Skybox(float h, float w, float d)
 	{
-		skyTexture = new Texture(Gdx.files.internal("textures/miramar_large.png"));
+		skyTexture = new Texture(Gdx.files.internal("textures/skybox.png"));
 		size = new Vector3D(h,w,d);
 		position = new Point3D(0,0,0);
 	}

@@ -28,9 +28,14 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 	boolean thirdPersonCamEnabled = false;
 	private boolean wDown, aDown, sDown, dDown, upDown, downDown, leftDown, rightDown, qDown, eDown;
 	
+	//0 = Loss
+	//1 = level 1
+	//2 = level 2
+	//etc.. if we manage..
+	private int phase;
 	
 	private World world;
-	MazeWall movingWall;
+	private DeathWall deathWall; //The wall that kills you
 	
 	private List<PointLight> pointLights;
 	private DirectionalLight dirLight;
@@ -38,6 +43,9 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 	Maze maze;
 	@Override
 	public void create () {
+		
+		phase = 1;
+		
 		ModelTest test = new ModelTest();
 		//TODO: fix backculling
 		//Gdx.gl.glEnable(GL20.GL_CULL_FACE);
@@ -47,6 +55,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		shader = new Shader();
 		
 		world = new World(5,200);
+		deathWall = new DeathWall(new Point3D(25/2,20,0),400,400, 0.3f, 3);
 		
 		pointLights = new ArrayList<PointLight>();
 		
@@ -63,7 +72,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 			pL.updateShaderValues();
 		}
 		
-		dirLight = new DirectionalLight(new Vector3D(19, 12, -1),new Vector3D(0.5f, 0.5f, 0.2f),new Vector3D(0.1f, 0.2f, 0.3f));
+		dirLight = new DirectionalLight(new Vector3D(-19, 12, 1),new Vector3D(0.5f, 0.5f, 0.2f),new Vector3D(0.1f, 0.2f, 0.3f));
 		dirLight.fetchLocs(shader);
 		dirLight.updateShaderValues();
 
@@ -165,7 +174,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 			
 		}
 		playerMovement.normalize();
-		firstPersonPlayer.move(playerMovement, world.blockList);
+		firstPersonPlayer.move(playerMovement, world);
 		
 		for(MazeWall wall : world.blockList) {
 			//NOTE THIS DOES NOTHING WITHOUT MOVING WALLS
@@ -185,8 +194,10 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 			world.addAdditionalZ(1);
 		}
 		
-		thirdPersonCam.eye.set(firstPersonPlayer.playerCamera.eye.x + 10, firstPersonPlayer.playerCamera.eye.y + 20, firstPersonPlayer.playerCamera.eye.z);
-		thirdPersonCam.LookAt(firstPersonPlayer.playerCamera.eye, new Vector3D(0, 1, 0));
+		deathWall.move(deltaTime);
+		
+		//thirdPersonCam.eye.set(firstPersonPlayer.playerCamera.eye.x + 10, firstPersonPlayer.playerCamera.eye.y + 20, firstPersonPlayer.playerCamera.eye.z);
+		//thirdPersonCam.LookAt(firstPersonPlayer.playerCamera.eye, new Vector3D(0, 1, 0));
 		skybox.position.set(firstPersonPlayer.playerCamera.eye.x, firstPersonPlayer.playerCamera.eye.y, firstPersonPlayer.playerCamera.eye.z);
 		
 	}
@@ -263,21 +274,13 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 			}
 
 			
-			/*for(MazeWall wall : maze.wallList) {
-				if(wall == null) {
-					continue;
-				}
-				shader.setMaterialDiffuse(wall.red, wall.green, wall.blue, 1);	
-				shader.setModelMatrix(wall.getModelMatrix());
-				wall.draw();	
-			}*/
-			
+			//General terrain
 			for(MazeWall wall : world.blockList) {
 				if(wall == null) {
 					continue;
 				}
 				
-				boolean willBeRendered = wall.position.z > firstPersonPlayer.playerCamera.eye.z - 50;
+				boolean willBeRendered = wall.position.z > deathWall.position.z;
 				
 				//willBeRendered = willBeRendered && wall.position.z > firstPersonPlayer.playerCamera.eye.z + 300;
 				
@@ -289,18 +292,25 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 				}
 			}
 			
+			//Obstacles in world
 			for(Obstacle pillar : world.obstacles) {
 				if(pillar == null) {
 					continue;
 				}
 				
-				boolean willBeRendered = pillar.position.z > firstPersonPlayer.playerCamera.eye.z - 50;
+				boolean willBeRendered = pillar.position.z > deathWall.position.z;
 				
 				if(willBeRendered)
 				{
 					pillar.draw(shader);
 				}
 			}
+			
+			//Death wall
+			
+			shader.setMaterialDiffuse(1,1,1,0.5f);	
+			shader.setModelMatrix(deathWall.getModelMatrix());
+			deathWall.draw();
 			
 		}
 	}

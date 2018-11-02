@@ -8,8 +8,8 @@ import com.badlogic.gdx.graphics.Texture;
 
 public class MazeWall {
 	public Point3D position;
-	private Texture tex = null;
-	private Texture specTex = null;
+	protected Texture tex = null;
+	protected Texture specTex = null;
 	
 	private static Texture baseTex = null;
 	private static Texture topTex = null;
