@@ -13,6 +13,7 @@ public class MazeWall {
 	
 	private static Texture baseTex = null;
 	private static Texture topTex = null;
+	private static Texture pillarTex = null;
 	
 	public float width;
 	public float height;
@@ -37,6 +38,7 @@ public class MazeWall {
 			//Texture loading
 			baseTex = new Texture(Gdx.files.internal("textures/base_texture.png"));
 			topTex = new Texture(Gdx.files.internal("textures/top_texture.png"));
+			pillarTex = new Texture(Gdx.files.internal("textures/cubemap_texture.png"));
 		}
 		tex = baseTex;
 		specTex = baseTex;
@@ -59,12 +61,18 @@ public class MazeWall {
 		specTex = topTex;
 	}
 	
+	public void usePillarTexture() {
+		tex = pillarTex;
+		specTex = pillarTex;
+	}
+	
 	//For a moving wall
 	public MazeWall(Point3D a, Point3D b, float w, float h, float d, float s) {
 		if(baseTex == null)
 		{
 			//Texture loading
 			baseTex = new Texture(Gdx.files.internal("textures/base_texture.png"));
+			pillarTex = new Texture(Gdx.files.internal("textures/cubemap_texture.png"));
 			topTex = new Texture(Gdx.files.internal("textures/top_texture.png"));
 		}
 		tex = baseTex;
