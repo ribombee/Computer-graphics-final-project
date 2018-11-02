@@ -288,6 +288,20 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 					wall.draw();
 				}
 			}
+			
+			for(Obstacle pillar : world.obstacles) {
+				if(pillar == null) {
+					continue;
+				}
+				
+				boolean willBeRendered = pillar.position.z > firstPersonPlayer.playerCamera.eye.z - 50;
+				
+				if(willBeRendered)
+				{
+					pillar.draw(shader);
+				}
+			}
+			
 		}
 	}
 
