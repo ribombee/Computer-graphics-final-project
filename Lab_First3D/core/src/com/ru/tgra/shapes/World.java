@@ -6,6 +6,7 @@ import com.flowpowered.noise.NoiseQuality;
 import com.flowpowered.noise.module.source.Perlin;
 
 public class World {
+	
 	public int width, depth;
 	public int blockWidth = 5;
 	public int blockHeight = 5;

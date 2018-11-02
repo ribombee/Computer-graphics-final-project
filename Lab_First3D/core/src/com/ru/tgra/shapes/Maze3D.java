@@ -38,6 +38,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 	Maze maze;
 	@Override
 	public void create () {
+		ModelTest test = new ModelTest();
 		//TODO: fix backculling
 		//Gdx.gl.glEnable(GL20.GL_CULL_FACE);
 		//Gdx.gl.glCullFace(GL20.GL_BACK);
