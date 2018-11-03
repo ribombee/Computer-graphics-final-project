@@ -265,7 +265,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 					continue;
 				}
 				
-				boolean willBeRendered = wall.position.z > deathWall.position.z;
+				boolean willBeRendered = wall.position.z > deathWall.position.z + deathWall.depth/2 - 2;
 				
 				willBeRendered = willBeRendered && wall.position.z < firstPersonPlayer.playerCamera.eye.z + 200;
 				
@@ -282,7 +282,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 					continue;
 				}
 				
-				boolean willBeRendered = pillar.position.z > deathWall.position.z;
+				boolean willBeRendered = pillar.position.z > deathWall.position.z + deathWall.depth/2 - 20;
 				
 				willBeRendered = willBeRendered && pillar.position.z < firstPersonPlayer.playerCamera.eye.z + 200;
 				
