@@ -38,12 +38,12 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 	private DirectionalLight dirLight;
 	private Skybox skybox;
 	Maze maze;
+	ModelTest test;
 	@Override
 	public void create () {
 		
 		phase = 1;
 		
-		ModelTest test = new ModelTest();
 		Gdx.gl.glEnable(GL20.GL_BLEND);
 		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
@@ -104,7 +104,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 
 		firstPersonPlayer.playerCamera.PerspctiveProjection3D(80, 1, 1f, 400);
 		
-		firstPersonPlayer.moveToStart(new Point3D(20,100,20));
+		firstPersonPlayer.moveToStart(new Point3D(20,50,20));
 		firstPersonPlayer.playerCamera.LookAt(new Point3D(firstPersonPlayer.playerCamera.eye.x,firstPersonPlayer.playerCamera.eye.y,firstPersonPlayer.playerCamera.eye.z + 1), new Vector3D(0,1,0));
 		//firstPersonPlayer.move(new Vector3D(0,0,0), new ArrayList<MazeWall>());
 		
@@ -121,7 +121,8 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		orthographicCam.LookAt(new Point3D(deathWall.position.x, deathWall.position.y + deathWall.height/2, 0), new Vector3D(0,0,-1));
 
 		skybox = new Skybox();
-		
+
+		test = new ModelTest(new Point3D(firstPersonPlayer.playerCamera.eye.x, firstPersonPlayer.playerCamera.eye.y + 10, firstPersonPlayer.playerCamera.eye.z + 10));
 	}
 
 	private void input()
@@ -197,7 +198,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		deathWall.move(firstPersonPlayer.playerCamera.eye);
 		
 		skybox.position.set(firstPersonPlayer.playerCamera.eye.x, firstPersonPlayer.playerCamera.eye.y, firstPersonPlayer.playerCamera.eye.z);
-		
+		//test.position.set(firstPersonPlayer.playerCamera.eye.x, firstPersonPlayer.playerCamera.eye.y + 10, firstPersonPlayer.playerCamera.eye.z + 10);
 	}
 	
 	private void display() {
@@ -254,7 +255,8 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 				ModelMatrix.main.popMatrix();
 			}
 
-			
+
+			test.draw();
 			//General terrain
 			for(MazeWall wall : world.blockList) {
 				if(wall == null) {

@@ -88,7 +88,6 @@ public class World {
 			{
 				int heightNoise = (int)Math.round((terrainNoise.getValue(x, z, 0.0)*50 -45));
 				boolean hasObstacle = obstacleCheck(x,z);
-				System.out.print(hasObstacle + ", ");
 				for(int i = baseHeight; i < heightNoise; i++)
 				{
 					MazeWall stillBlock = new MazeWall(new Point3D(x*blockWidth, i*blockHeight, z*blockDepth), blockWidth, blockHeight, blockDepth);
@@ -120,7 +119,6 @@ public class World {
 					obstacles.add(obstacle);
 
 				}
-				System.out.println("");
 			}
 		}
 		System.out.println("Just added!");
