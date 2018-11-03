@@ -22,7 +22,6 @@ public class DeathWall extends MazeWall{
 	
 	public void move(Point3D playerPos) {
 		float dt = Maze3D.deltaTime;
-		System.out.println("dist: " + (playerPos.z - (position.z + depth/2)));
 		
 		if(playerPos.z - (position.z + depth/2) > minZDist) {
 			position.set(position.x, position.y, playerPos.z - (minZDist + depth/2));

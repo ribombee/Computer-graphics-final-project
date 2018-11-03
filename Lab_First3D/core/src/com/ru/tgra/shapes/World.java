@@ -27,6 +27,8 @@ public class World {
 	public World(int xSize, int zSize)
 	{
 		terrainNoise = new Perlin();
+		int seed = (int)System.nanoTime();
+		terrainNoise.setSeed(seed);
 		terrainNoise.setNoiseQuality(NoiseQuality.BEST);
 		terrainNoise.setFrequency(0.2f);
 		terrainNoise.setLacunarity(0.5);

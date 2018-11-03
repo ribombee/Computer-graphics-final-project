@@ -10,10 +10,10 @@ public class DesktopLauncher {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 
 		config.title = "Mindcraft"; // or whatever you like
-		config.width = 748;  //experiment with
-		config.height = 748;  //the window size
-		config.x = 150;
-		config.y = 50;
+		config.width = 1920;  //experiment with
+		config.height = 1080;  //the window size
+		config.x = 0;
+		config.y = -1;
 		new LwjglApplication(new Maze3D(), config);
 	}
 }

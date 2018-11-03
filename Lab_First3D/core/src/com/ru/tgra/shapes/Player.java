@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import com.badlogic.gdx.Gdx;
+
 public class Player {
 
 	public Camera playerCamera;
@@ -17,6 +19,8 @@ public class Player {
 	public float verticalVelocity;
 	private boolean grounded;
 	
+	private float yRotation;
+	
 	private ArrayList<MazeWall> collisionBuffer;
 	
 	public Player(float w, float h, float d, float speed) {
@@ -29,6 +33,7 @@ public class Player {
 		
 		collisionBuffer = new ArrayList<MazeWall>(8);
 		collisionBuffer.ensureCapacity(8);
+		yRotation = 0;
 	}
 	
 	public void moveToStart(Point3D start) {
@@ -172,88 +177,16 @@ public class Player {
 		collisionBuffer.clear();
 		
 		return speed;
-		/*
-		for(MazeWall cube : collidingWalls) {
-			//Negative distance = behind, Positive distance = in front
-			float xDistance = position.x - cube.position.x;
-			float yDistance = position.y - cube.position.y;
-			float zDistance = position.z - cube.position.z;
-			
-			boolean collidingX = false, collidingY = false, collidingZ = false;
-			
-			if(xDistance <= 0) {
-				xDistance += width / 2 + cube.width/2;
-				if(xDistance <= speed.x) {
-					collidingX = true;
-					//speed.z = -zDistance;
-				}
-			}
-			else {
-				//PROBLEMATIC AREA
-				xDistance -= width / 2 + cube.width/2;
-				if(xDistance > speed.x) {
-					collidingX = true;
-					//speed.z = -zDistance;
-				}
-			}
-			
-			if(yDistance <= 0) {
-				yDistance += height / 2 + cube.height / 2;
-				if(yDistance <= speed.y) {
-					collidingY = true;
-					//speed.y = -yDistance;
-				}
-			}
-			else {
-				yDistance -= height / 2 + cube.height / 2;
-				if(yDistance >= speed.y) {
-					collidingY = true;
-					//speed.y = -yDistance;
-					//Player touched the ground
-					verticalVelocity = 0;
-					grounded = true;
-				}
-			}
-			
-			if(zDistance <= 0) {
-				zDistance += depth / 2 + cube.depth/2;
-				if(zDistance <= speed.z) {
-					collidingZ = true;
-					System.out.println("Z Collision front, " + speed.x + " " + speed.y + " " + speed.z + " " + -zDistance);
-					//speed.z = -zDistance;
-				}
-			}
-			else {
-				//PROBLEMATIC AREA
-				zDistance -= depth / 2 + cube.depth/2;
-				if(zDistance > speed.z) {
-					collidingZ = true;
-					System.out.println("Z Collision back, " + speed.x + " " + speed.y + " " + speed.z + " " + -zDistance);
-					//speed.z = -zDistance;
-				}
-			}
-			
-			float highestAxis = -1;
-			if(collidingY)
-				highestAxis = Math.max(Math.abs(yDistance), highestAxis);
-			if(collidingZ)
-				highestAxis = Math.max(Math.abs(zDistance), highestAxis);
-			if(collidingX)
-				highestAxis = Math.max(Math.abs(xDistance), highestAxis);
-			
-			
-			if(highestAxis == yDistance) {
-				speed.y = -yDistance;
-			}
-			else if(highestAxis == zDistance) {
-				speed.z = -zDistance;
-			}
-			else if(highestAxis == xDistance) {
-				speed.x = -xDistance;
-			}
-		}
-		return speed;
-		*/
 	}
 	
+	public void lookY(float angle) {
+		if(yRotation + angle < 90 && yRotation + angle > -90) {
+			yRotation += angle;
+			playerCamera.pitch(Gdx.input.getDeltaY()*0.1f);
+		}
+	}
+	
+	public void lookX(float angles) {
+		playerCamera.rotateY(-Gdx.input.getDeltaX()*0.2f);
+	}
 }

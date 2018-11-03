@@ -100,24 +100,26 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		
 		maze = new Maze(mazeWidth, mazeWidth);
 
-		firstPersonPlayer = new Player(3,7,3, 35f);
-		firstPersonPlayer.gravityFactor = 0.6f;
+		firstPersonPlayer = new Player(3,7,3, 27f);
+		firstPersonPlayer.gravityFactor = 2f;
 
-		firstPersonPlayer.playerCamera.PerspctiveProjection3D(80, 1, 1, 400);
+		firstPersonPlayer.playerCamera.PerspctiveProjection3D(80, 1, 1f, 400);
 		
 		firstPersonPlayer.moveToStart(new Point3D(20,100,20));
-		firstPersonPlayer.playerCamera.LookAt(new Point3D(0,0,0), new Vector3D(0,1,0));
+		firstPersonPlayer.playerCamera.LookAt(new Point3D(firstPersonPlayer.playerCamera.eye.x,firstPersonPlayer.playerCamera.eye.y,firstPersonPlayer.playerCamera.eye.z + 1), new Vector3D(0,1,0));
 		//firstPersonPlayer.move(new Vector3D(0,0,0), new ArrayList<MazeWall>());
 		
-		deathWall = new DeathWall(new Point3D(0,0,0),800, 400, 300, 10);
+		deathWall = new DeathWall(new Point3D(0,0,0),800, 400, 300, 5);
 
-		Point3D deathWallStart = new Point3D(firstPersonPlayer.playerCamera.eye.x, 0, firstPersonPlayer.playerCamera.eye.z - deathWall.depth/2 - 50);
+		Point3D deathWallStart = new Point3D(world.blockWidth*world.width/2, 0, firstPersonPlayer.playerCamera.eye.z - deathWall.depth/2 - 50);
 		deathWall.position = deathWallStart;
 		
 		orthographicCam = new Camera();
-		orthographicCam.OrthographicProjection3D(-(mazeWidth*world.blockWidth+10), (mazeWidth*world.blockWidth+10), -(mazeWidth*world.blockHeight+10), (mazeWidth*world.blockHeight+10), 1, 400);
-		orthographicCam.eye = new Point3D(world.blockWidth*(5 - 1), deathWall.position.y + deathWall.height/2 + 20, 0);
-		orthographicCam.LookAt(new Point3D(world.blockWidth*(5 - 1), deathWall.position.y + deathWall.height/2, 0), new Vector3D(0,0,-1));
+
+		orthographicCam.OrthographicProjection3D(-20, 20, -40, 40, 2f, 400);
+		//orthographicCam.OrthographicProjection3D(-(world.blockDepth*8), (world.blockDepth*8), -(world.width*world.blockWidth), (world.width*world.blockWidth), 2f, 400);
+		orthographicCam.eye = new Point3D(deathWall.position.x, deathWall.position.y + deathWall.height/2 + 20, 0);
+		orthographicCam.LookAt(new Point3D(deathWall.position.x, deathWall.position.y + deathWall.height/2, 0), new Vector3D(0,0,-1));
 
 		skybox = new Skybox();
 		
@@ -165,8 +167,9 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		if(dDown) {
 			playerMovement.x += 1;
 		}
-		firstPersonPlayer.playerCamera.rotateY(-Gdx.input.getDeltaX()*0.2f);
-		firstPersonPlayer.playerCamera.pitch(Gdx.input.getDeltaY()*0.1f);
+		
+		firstPersonPlayer.lookX(-Gdx.input.getDeltaX()*0.2f);
+		firstPersonPlayer.lookY(Gdx.input.getDeltaY()*0.1f);
 		
 		playerMovement.normalize();
 		firstPersonPlayer.move(playerMovement, world);
@@ -198,8 +201,8 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 	private void display() {
 
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-		for(int i = 0; i < 3; i++) {
-			if(i == 0) {
+		for(int i = 0; i < 2; i++) {
+			if(i == 1) {
 				Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 				Point3D cameraPosVec = firstPersonPlayer.playerCamera.eye;
 				shader.setEyePosition(cameraPosVec.x, cameraPosVec.y, cameraPosVec.z);
@@ -228,20 +231,22 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 				SphereGraphic.drawSolidSphere();
 				ModelMatrix.main.popMatrix();
 			}
-			else if (i == 1) {
+			else if (i == 0) {
 				if(!orthographicCamEnabled) {
 					continue;
 				}
-				orthographicCam.eye.set(orthographicCam.eye.x, orthographicCam.eye.y, firstPersonPlayer.playerCamera.eye.z - world.blockDepth*10);
-				Gdx.gl.glViewport(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+				orthographicCam.eye.set(orthographicCam.eye.x, orthographicCam.eye.y, firstPersonPlayer.playerCamera.eye.z );
+				Gdx.gl.glViewport(Gdx.graphics.getWidth() * 3/4, Gdx.graphics.getHeight() / 4, Gdx.graphics.getWidth()/4, Gdx.graphics.getHeight() *3/4);
+				//Gdx.gl.glScissor(x, y, width, height);
+				
 				Point3D cameraPosVec = orthographicCam.eye;
 				shader.setEyePosition(cameraPosVec.x, cameraPosVec.y, cameraPosVec.z);
 				shader.setProjectionMatrix(orthographicCam.getProjectionMatrix());
 				shader.setViewMatrix(orthographicCam.getViewMatrix());
 				
 				ModelMatrix.main.pushMatrix();
-				ModelMatrix.main.addTranslation(firstPersonPlayer.playerCamera.eye.x, 20, firstPersonPlayer.playerCamera.eye.z);
-				ModelMatrix.main.addScale(3,3,3);
+				ModelMatrix.main.addTranslation(firstPersonPlayer.playerCamera.eye.x, firstPersonPlayer.playerCamera.eye.y, firstPersonPlayer.playerCamera.eye.z);
+				ModelMatrix.main.addScale(1,1,1);
 				shader.setModelMatrix(ModelMatrix.main.matrix);
 				SphereGraphic.drawSolidSphere();
 				ModelMatrix.main.popMatrix();
@@ -373,7 +378,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 			eDown = false;
 		}
 		if(keycode == Input.Keys.SPACE) {
-			firstPersonPlayer.jump(40);
+			firstPersonPlayer.jump(60);
 		}
 		return false;
 	}
