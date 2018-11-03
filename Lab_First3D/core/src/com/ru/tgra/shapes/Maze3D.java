@@ -6,9 +6,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
-import com.flowpowered.noise.NoiseQuality;
-import com.flowpowered.noise.module.source.Perlin;
-
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
@@ -24,7 +21,9 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 	private Camera orthographicCam;	
 	boolean orthographicCamEnabled = true;
 	
-	private boolean wDown, aDown, sDown, dDown, upDown, downDown, leftDown, rightDown, qDown, eDown;
+	private Camera thirdPersonCam;
+	boolean thirdPersonCamEnabled = false;
+	private boolean wDown, aDown, sDown, dDown;
 	
 	//0 = Loss
 	//1 = level 1
@@ -187,6 +186,9 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 			pL.updateShaderValues();
 		}
 		
+		
+		world.move(deltaTime);
+		
 		if(firstPersonPlayer.playerCamera.eye.z / world.blockDepth > world.currentZGenerationIndex - 200)
 		{
 			world.addAdditionalZ(30);
@@ -322,24 +324,6 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		if(keycode == Input.Keys.D) {
 			dDown = true;
 		}
-		if(keycode == Input.Keys.UP) {
-			upDown = true;
-		}
-		if(keycode == Input.Keys.DOWN) {
-			downDown = true;
-		}
-		if(keycode == Input.Keys.LEFT) {
-			leftDown = true;
-		}
-		if(keycode == Input.Keys.RIGHT) {
-			rightDown = true;
-		}
-		if(keycode == Input.Keys.Q) {
-			qDown = true;
-		}
-		if(keycode == Input.Keys.E) {
-			eDown = true;
-		}
 		return false;
 	}
 
@@ -358,24 +342,6 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		}
 		if(keycode == Input.Keys.D) {
 			dDown = false;
-		}
-		if(keycode == Input.Keys.UP) {
-			upDown = false;
-		}
-		if(keycode == Input.Keys.DOWN) {
-			downDown = false;
-		}
-		if(keycode == Input.Keys.LEFT) {
-			leftDown = false;
-		}
-		if(keycode == Input.Keys.RIGHT) {
-			rightDown = false;
-		}
-		if(keycode == Input.Keys.Q) {
-			qDown = false;
-		}
-		if(keycode == Input.Keys.E) {
-			eDown = false;
 		}
 		if(keycode == Input.Keys.SPACE) {
 			firstPersonPlayer.jump(60);

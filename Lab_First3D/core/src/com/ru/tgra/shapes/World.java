@@ -68,6 +68,18 @@ public class World {
 		return higherX && higherZ;
 	}
 	
+	public void move(float dt)
+	{
+		for(Obstacle ob: obstacles) 
+		{
+			for(DeathOrb orb : ob.orbList)
+			{
+				orb.move(dt);
+			}
+
+		}
+	}
+	
 	public void addAdditionalZ(int zToAdd)
 	{	
 		for(int x = 0; x < width; x++)
@@ -88,9 +100,25 @@ public class World {
 				}
 				if(hasObstacle)
 				{
-					char [] stack = {'p', 'p', 'p'};
-					Obstacle pillar = new Obstacle(stack, new Point3D(x*blockWidth, heightNoise*blockHeight, z*blockDepth));
-					obstacles.add(pillar);
+					char [] threePillar = {'p', 'p', 'p'};
+					char[] orbPedestal = {'p', 'p', 'o'};
+					
+					char[] obstacleCode;
+					
+					float rand = (float)Math.random();
+					
+					if(rand > 0.3)
+					{
+						obstacleCode = threePillar;
+					}
+					else
+					{
+						obstacleCode = orbPedestal;
+					}
+					
+					Obstacle obstacle = new Obstacle(obstacleCode, new Point3D(x*blockWidth, heightNoise*blockHeight, z*blockDepth));
+					obstacles.add(obstacle);
+
 				}
 				System.out.println("");
 			}

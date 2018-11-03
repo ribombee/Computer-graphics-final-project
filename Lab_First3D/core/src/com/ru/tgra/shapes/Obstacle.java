@@ -13,6 +13,7 @@ public class Obstacle {
 	
 	public ArrayList <MazeWall> blockList;
 	public ArrayList <FileModel> modelList; //TODO: use Valli's other model loading method he has hidden away somewhere
+	public ArrayList <DeathOrb> orbList;
 	
 	public Obstacle(char []stack, Point3D bottomPos)
 	{
@@ -22,6 +23,8 @@ public class Obstacle {
 		
 		blockList = new ArrayList<MazeWall>();
 		modelList = new ArrayList<FileModel>();
+		orbList = new ArrayList<DeathOrb>();
+		
 		
 		for(char obj : stack)
 		{
@@ -36,6 +39,12 @@ public class Obstacle {
 				pillar.usePillarTexture(); //TODO make use pillar texture!
 				blockList.add(pillar);
 			}
+			else if(obj == 'o')
+			{
+				Point3D orbPos = new Point3D(currentPos.x, currentPos.y, currentPos.z);
+				DeathOrb orb = new DeathOrb(orbPos, blockWidth/2, 1, 10);
+				orbList.add(orb);
+			}
 			currentPos.y += blockHeight;
 		}
 	}
@@ -49,6 +58,13 @@ public class Obstacle {
 			shader.setMaterialDiffuse(1,1,1,1);	
 			shader.setModelMatrix(block.getModelMatrix());
 			block.draw();
+		}
+		
+		for(DeathOrb orb : orbList)
+		{
+			shader.setMaterialDiffuse(1, 0, 0, 1);
+			shader.setModelMatrix(orb.getModelMatrix());
+			orb.draw();
 		}
 	}
 }
