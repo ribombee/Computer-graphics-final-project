@@ -193,6 +193,7 @@ public class MazeWall {
 	}
 	
 	public void draw() {
+		Shader.mainShader.setModelMatrix(getModelMatrix());
 		BoxGraphic.drawSolidCube(tex, null);
 	}
 }

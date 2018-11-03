@@ -24,7 +24,12 @@ public class Skybox {
 	
 	public void draw() {
 		Shader.mainShader.useSkyboxShader();
+		ModelMatrix.main.pushMatrix();
+		ModelMatrix.main.addTranslation(position.x, position.y, position.z);
+		ModelMatrix.main.addScale(size.x,size.y, size.z);
+		Shader.mainShader.setModelMatrix(ModelMatrix.main.matrix);
 		BoxGraphic.drawSolidCube(skyTexture, null);
+		ModelMatrix.main.popMatrix();
 		Shader.mainShader.useWorldShader();
 	}
 }

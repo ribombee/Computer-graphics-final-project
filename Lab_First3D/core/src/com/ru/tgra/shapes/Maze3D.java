@@ -33,6 +33,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 	
 	private World world;
 	private DeathWall deathWall; //The wall that kills you
+	private MazeWall deathFloor;
 	
 	private List<PointLight> pointLights;
 	private DirectionalLight dirLight;
@@ -40,9 +41,27 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 	Maze maze;
 	BillboardSprite billboard;
 	LookingBob bob;
+	
 	@Override
 	public void create () {
-		
+		setupGame();
+		startGraphics();
+	}
+	
+	private void startGraphics() {
+		int vertexPointer = shader.getVertexPointer();
+		int normalPointer = shader.getNormalPointer();
+		int UVPointer = shader.getUVPointer();
+
+		BoxGraphic.create(vertexPointer, normalPointer, UVPointer);
+		SphereGraphic.create(vertexPointer, normalPointer);
+		SincGraphic.create(vertexPointer);
+		CoordFrameGraphic.create(vertexPointer);
+		FileModel.create(vertexPointer, normalPointer);
+		SpriteGraphic.create();
+		BobGraphic.create();
+	}
+	private void setupGame() {
 		phase = 1;
 		
 		Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -78,18 +97,6 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		shader.setMaterialShine(13);
 		shader.setGlobalAmbient(0.3f);
 		
-		int vertexPointer = shader.getVertexPointer();
-		int normalPointer = shader.getNormalPointer();
-		int UVPointer = shader.getUVPointer();
-		
-		BoxGraphic.create(vertexPointer, normalPointer, UVPointer);
-		SphereGraphic.create(vertexPointer, normalPointer);
-		SincGraphic.create(vertexPointer);
-		CoordFrameGraphic.create(vertexPointer);
-		FileModel.create(vertexPointer, normalPointer);
-		SpriteGraphic.create();
-		BobGraphic.create();
-
 		Gdx.gl.glClearColor(0.3f, 0.3f, 0.2f, 1);
 
 		ModelMatrix.main = new ModelMatrix();
@@ -112,13 +119,14 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		//firstPersonPlayer.move(new Vector3D(0,0,0), new ArrayList<MazeWall>());
 		
 		deathWall = new DeathWall(new Point3D(0,0,0),800, 400, 300, 5);
+		deathFloor = new MazeWall(new Point3D(0,-100,0), 5, 5, 5);
 
 		Point3D deathWallStart = new Point3D(world.blockWidth*world.width/2, 0, firstPersonPlayer.playerCamera.eye.z - deathWall.depth/2 - 50);
 		deathWall.position = deathWallStart;
 		
 		orthographicCam = new Camera();
 
-		orthographicCam.OrthographicProjection3D(-20, 20, -40, 40, 2f, 400);
+		orthographicCam.OrthographicProjection3D(-20, 20, 40, -40, 2f, 400);
 		//orthographicCam.OrthographicProjection3D(-(world.blockDepth*8), (world.blockDepth*8), -(world.width*world.blockWidth), (world.width*world.blockWidth), 2f, 400);
 		orthographicCam.eye = new Point3D(deathWall.position.x, deathWall.position.y + deathWall.height/2 + 20, 0);
 		orthographicCam.LookAt(new Point3D(deathWall.position.x, deathWall.position.y + deathWall.height/2, 0), new Vector3D(0,0,-1));
@@ -126,7 +134,6 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		skybox = new Skybox();
 
 		billboard = new BillboardSprite(new Point3D(0, 60, 40));
-		
 		bob = new LookingBob(new Point3D(0, 40, 10));
 	}
 
@@ -152,6 +159,39 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 	
 	private void update() {
 		
+		updateMovement();
+		
+		for(MazeWall wall : world.blockList) {
+			//NOTE THIS DOES NOTHING WITHOUT MOVING WALLS
+			if(wall == null) {
+				continue;
+			}
+			wall.move(deltaTime, firstPersonPlayer.playerCamera.eye, new Vector3D(firstPersonPlayer.width, firstPersonPlayer.height, firstPersonPlayer.depth));
+		}
+		
+		for(PointLight pL : pointLights) {
+			pL.move(deltaTime);
+			pL.updateShaderValues();
+		}
+		
+		
+		world.move(deltaTime);
+		
+		if(firstPersonPlayer.playerCamera.eye.z / world.blockDepth > world.currentZGenerationIndex - 200)
+		{
+			world.addAdditionalZ(30);
+		}
+		
+		deathWall.move(firstPersonPlayer.playerCamera.eye);
+		
+		skybox.position.set(firstPersonPlayer.playerCamera.eye.x, firstPersonPlayer.playerCamera.eye.y, firstPersonPlayer.playerCamera.eye.z);
+		deathFloor.position.set(firstPersonPlayer.playerCamera.eye.x, deathFloor.position.y, firstPersonPlayer.playerCamera.eye.z);
+
+		billboard.lookAt(Camera.activeCamera.eye, new Vector3D(0,1,0));
+		bob.lookAt(Camera.activeCamera.eye, new Vector3D(0,1,0));
+	}
+	
+	private void updateMovement() {
 		if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
 			Gdx.app.exit();
 		}
@@ -178,35 +218,6 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		
 		playerMovement.normalize();
 		firstPersonPlayer.move(playerMovement, world);
-		
-		for(MazeWall wall : world.blockList) {
-			//NOTE THIS DOES NOTHING WITHOUT MOVING WALLS
-			if(wall == null) {
-				continue;
-			}
-			wall.move(deltaTime, firstPersonPlayer.playerCamera.eye, new Vector3D(firstPersonPlayer.width, firstPersonPlayer.height, firstPersonPlayer.depth));
-		}
-		
-		for(PointLight pL : pointLights) {
-			pL.move(deltaTime);
-			pL.updateShaderValues();
-		}
-		
-		
-		world.move(deltaTime);
-		
-		if(firstPersonPlayer.playerCamera.eye.z / world.blockDepth > world.currentZGenerationIndex - 200)
-		{
-			world.addAdditionalZ(30);
-		}
-		
-		deathWall.move(firstPersonPlayer.playerCamera.eye);
-		
-		skybox.position.set(firstPersonPlayer.playerCamera.eye.x, firstPersonPlayer.playerCamera.eye.y, firstPersonPlayer.playerCamera.eye.z);
-		//test.position.set(firstPersonPlayer.playerCamera.eye.x, firstPersonPlayer.playerCamera.eye.y + 10, firstPersonPlayer.playerCamera.eye.z + 10);
-
-		billboard.lookAt(Camera.activeCamera.eye, new Vector3D(0,1,0));
-		bob.lookAt(Camera.activeCamera.eye, new Vector3D(0,1,0));
 	}
 	
 	private void display() {
@@ -221,27 +232,8 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 				shader.setProjectionMatrix(firstPersonPlayer.playerCamera.getProjectionMatrix());
 				shader.setViewMatrix(firstPersonPlayer.playerCamera.getViewMatrix());	
 				
-
-				ModelMatrix.main.pushMatrix();
-				ModelMatrix.main.addTranslation(5*5, 60, 0);
-				ModelMatrix.main.addScale(5,5,5);
-				shader.setModelMatrix(ModelMatrix.main.matrix);
-				//FileModel.draw();
-				ModelMatrix.main.popMatrix();
-				
-				ModelMatrix.main.pushMatrix();
-				ModelMatrix.main.addTranslation(skybox.position.x, skybox.position.y, skybox.position.z);
-				ModelMatrix.main.addScale(skybox.size.x,skybox.size.y,skybox.size.z);
-				shader.setModelMatrix(ModelMatrix.main.matrix);
 				skybox.draw();
-				ModelMatrix.main.popMatrix();
 				
-				ModelMatrix.main.pushMatrix();
-				ModelMatrix.main.addTranslation(orthographicCam.eye.x, orthographicCam.eye.y, orthographicCam.eye.z);
-				ModelMatrix.main.addScale(2,2,2);
-				shader.setModelMatrix(ModelMatrix.main.matrix);
-				SphereGraphic.drawSolidSphere();
-				ModelMatrix.main.popMatrix();
 			}
 			else if (i == 0) {
 				if(!orthographicCamEnabled) {
@@ -259,9 +251,10 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 				
 				ModelMatrix.main.pushMatrix();
 				ModelMatrix.main.addTranslation(firstPersonPlayer.playerCamera.eye.x, firstPersonPlayer.playerCamera.eye.y, firstPersonPlayer.playerCamera.eye.z);
-				ModelMatrix.main.addScale(1,1,1);
+				ModelMatrix.main.addRotationY(-firstPersonPlayer.xRotation);
+				ModelMatrix.main.addScale(40,40,40);
 				shader.setModelMatrix(ModelMatrix.main.matrix);
-				SphereGraphic.drawSolidSphere();
+				BobGraphic.draw();
 				ModelMatrix.main.popMatrix();
 			}
 
@@ -279,7 +272,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 				if(willBeRendered)
 				{
 					//shader.setMaterialDiffuse(wall.red, wall.green, wall.blue, 1);	
-					shader.setModelMatrix(wall.getModelMatrix());
+					
 					wall.draw();
 				}
 			}
@@ -312,15 +305,29 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 
 	@Override
 	public void render () {
-		
+		checkGameOver();
 		input();
-		//put the code inside the update and display methods, depending on the nature of the code
 		update();
 		display();
 
 	}
 
-
+	private void checkGameOver() {
+		//Iterate over all of our death objects to see if player is colliding. If so, restart.
+				for(Obstacle obstacle : world.obstacles) {
+					for(MazeWall wall : obstacle.orbList) {
+						if(firstPersonPlayer.collision(wall, new Vector3D(0,0,0))) {
+							restart();
+						}
+					}
+				}
+				if(firstPersonPlayer.collision(deathWall, new Vector3D(0,0,0))) {
+					restart();
+				}
+				if(firstPersonPlayer.collision(deathFloor,  new Vector3D(0,0,0))) {
+					restart();
+				}
+	}
 
 	@Override
 	public boolean keyDown(int keycode) {
@@ -398,5 +405,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		return false;
 	}
 
-
+	public void restart() {
+		setupGame();
+	}
 }

@@ -19,7 +19,7 @@ public class Player {
 	public float verticalVelocity;
 	private boolean grounded;
 	
-	private float yRotation;
+	public float yRotation, xRotation;
 	
 	private ArrayList<MazeWall> collisionBuffer;
 	
@@ -34,6 +34,7 @@ public class Player {
 		collisionBuffer = new ArrayList<MazeWall>(8);
 		collisionBuffer.ensureCapacity(8);
 		yRotation = 0;
+		xRotation = 0;
 		Camera.activeCamera = playerCamera;
 	}
 	
@@ -69,7 +70,7 @@ public class Player {
 		playerCamera.translate(direction);
 	}
 	
-	private boolean collision(MazeWall cube, Vector3D speed) {
+	public boolean collision(MazeWall cube, Vector3D speed) {
 		boolean inXRange = false;
 		boolean inYRange = false;
 		boolean inZRange = false;
@@ -188,6 +189,14 @@ public class Player {
 	}
 	
 	public void lookX(float angles) {
+		xRotation += angles;
+		
+		//Perform simple rotation correction in case it gets too large
+		if(xRotation > 360)
+			xRotation -= 360;
+		else if(xRotation < -360)
+			xRotation += 360;
+		
 		playerCamera.rotateY(-Gdx.input.getDeltaX()*0.2f);
 	}
 }
