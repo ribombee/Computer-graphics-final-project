@@ -20,6 +20,9 @@ public class World {
 	
 	public ArrayList<Obstacle> obstacles;
 	
+	public ArrayList<BillboardSprite> sprites;
+	
+	public int phase;
 	int heightMap[][];
 	private Perlin terrainNoise;
 	private Perlin obstacleNoise;
@@ -41,16 +44,17 @@ public class World {
 		width = xSize;
 		depth = zSize;
 		currentZGenerationIndex = 0;
+		phase = 0;
 		
 		heightMap = new int[width][depth];
 		blockList = new ArrayList<MazeWall>();
 		obstacles = new ArrayList<Obstacle>();
+		sprites = new ArrayList<BillboardSprite>();
 		generateInitialHeightMap();
 	}
 	
 	private void generateInitialHeightMap()
 	{
-
 		addAdditionalZ(depth);
 	}
 	
@@ -82,21 +86,51 @@ public class World {
 	
 	public void addAdditionalZ(int zToAdd)
 	{	
+		
+		for(int z = 0; z < zToAdd; z++) {
+			if(Math.random() <= 0.2f) {
+				int xPos = (int)(Math.random()*30 + + width/2 + 10);
+				int yPos = (int)(Math.random()*15) - 5;
+				BillboardSprite sprite = new BillboardSprite(new Point3D(xPos*blockWidth, yPos*blockHeight, (z + currentZGenerationIndex)*blockDepth), new Vector3D(6,20,1));
+				sprites.add(sprite);
+			}
+			if(Math.random() <= 0.2f) {
+				int xPos = (int)(Math.random()*30 + width/2 + 10);
+				int yPos = (int)(Math.random()*10);
+				BillboardSprite sprite = new BillboardSprite(new Point3D(-xPos*blockWidth, yPos*blockHeight, (z + currentZGenerationIndex)*blockDepth), new Vector3D(6,20,1));
+				sprites.add(sprite);
+			}
+		}
 		for(int x = 0; x < width; x++)
 		{
 			for(int z = currentZGenerationIndex; z < currentZGenerationIndex + zToAdd; z++) 
 			{
-				int heightNoise = (int)Math.round((terrainNoise.getValue(x, z, 0.0)*50 -45));
+				int heightNoise = (int)Math.round((terrainNoise.getValue(x, z, 0.0)*50 -45)) + baseHeight;
 				boolean hasObstacle = obstacleCheck(x,z);
-				for(int i = baseHeight; i < heightNoise; i++)
-				{
-					MazeWall stillBlock = new MazeWall(new Point3D(x*blockWidth, i*blockHeight, z*blockDepth), blockWidth, blockHeight, blockDepth);
-					stillBlock.setColor(0.3f, 0.5f, 0.2f);
-					if(i + 1 == heightNoise) {
-						stillBlock.useTopTexture();
+				if(phase <= 5) {
+					for(int i = baseHeight; i < heightNoise; i++)
+					{
+						MazeWall stillBlock = new MazeWall(new Point3D(x*blockWidth, i*blockHeight, z*blockDepth), blockWidth, blockHeight, blockDepth);
+						stillBlock.setColor(0.3f, 0.5f, 0.2f);
+						if(i + 1 == heightNoise && phase % 3 != 2) {
+							stillBlock.useTopTexture();
+						}
+						blockList.add(stillBlock);
 					}
-					blockList.add(stillBlock);
 				}
+				else if(phase > 5) {
+					int columnSize = (int)(Math.random()*4);
+					for(int i = heightNoise - columnSize; i < heightNoise; i++)
+					{
+						MazeWall stillBlock = new MazeWall(new Point3D(x*blockWidth, i*blockHeight, z*blockDepth), blockWidth, blockHeight, blockDepth);
+						stillBlock.setColor(0.3f, 0.5f, 0.2f);
+						if(i + 1 == heightNoise && phase % 3 != 2) {
+							stillBlock.useTopTexture();
+						}
+						blockList.add(stillBlock);
+					}
+				}
+				
 				if(hasObstacle)
 				{
 					char [] threePillar = {'p', 'p', 'p'};
@@ -121,7 +155,17 @@ public class World {
 				}
 			}
 		}
-		System.out.println("Just added!");
+		
 		currentZGenerationIndex += zToAdd;
+	}
+	public void nextPhase() {
+		phase++;
+		baseHeight++;
+		if(phase >= 5) {
+			terrainNoise.setFrequency((phase-5)*0.05f + 0.2f);
+		}
+		else if(phase >= 1) {
+			terrainNoise.setFrequency(phase*0.05f + 0.2f);
+		}
 	}
 }

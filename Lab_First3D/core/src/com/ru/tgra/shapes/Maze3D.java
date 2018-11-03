@@ -30,6 +30,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 	//2 = level 2
 	//etc.. if we manage..
 	private int phase;
+	private float levelDist;
 	
 	private World world;
 	private DeathWall deathWall; //The wall that kills you
@@ -38,10 +39,20 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 	private List<PointLight> pointLights;
 	private DirectionalLight dirLight;
 	private Skybox skybox;
-	Maze maze;
-	BillboardSprite billboard;
 	LookingBob bob;
 	
+	
+	public void nextPhase() {
+		phase++;
+		if(phase == 0) {
+			restart();
+		}
+		if(phase < 10)
+		{
+			deathWall.speed += 2;
+		}
+		world.nextPhase();
+	}
 	@Override
 	public void create () {
 		setupGame();
@@ -62,8 +73,8 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		BobGraphic.create();
 	}
 	private void setupGame() {
-		phase = 1;
-		
+		phase = 0;
+		levelDist = 200;
 		Gdx.gl.glEnable(GL20.GL_BLEND);
 		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
@@ -71,7 +82,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		Gdx.input.setCursorCatched(true);
 		shader = new Shader();
 		
-		world = new World(5,200);
+		world = new World(7,50);
 
 		pointLights = new ArrayList<PointLight>();
 		
@@ -104,10 +115,6 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 
 		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
-				
-		int mazeWidth = 21;
-		
-		maze = new Maze(mazeWidth, mazeWidth);
 
 		firstPersonPlayer = new Player(3,7,3, 27f);
 		firstPersonPlayer.gravityFactor = 2f;
@@ -133,7 +140,6 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 
 		skybox = new Skybox();
 
-		billboard = new BillboardSprite(new Point3D(0, 60, 40));
 		bob = new LookingBob(new Point3D(0, 40, 10));
 	}
 
@@ -177,9 +183,9 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		
 		world.move(deltaTime);
 		
-		if(firstPersonPlayer.playerCamera.eye.z / world.blockDepth > world.currentZGenerationIndex - 200)
+		if(firstPersonPlayer.playerCamera.eye.z / world.blockDepth > world.currentZGenerationIndex - 5*world.blockDepth)
 		{
-			world.addAdditionalZ(30);
+			world.addAdditionalZ(5);
 		}
 		
 		deathWall.move(firstPersonPlayer.playerCamera.eye);
@@ -187,8 +193,12 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		skybox.position.set(firstPersonPlayer.playerCamera.eye.x, firstPersonPlayer.playerCamera.eye.y, firstPersonPlayer.playerCamera.eye.z);
 		deathFloor.position.set(firstPersonPlayer.playerCamera.eye.x, deathFloor.position.y, firstPersonPlayer.playerCamera.eye.z);
 
-		billboard.lookAt(Camera.activeCamera.eye, new Vector3D(0,1,0));
 		bob.lookAt(Camera.activeCamera.eye, new Vector3D(0,1,0));
+		
+		if(firstPersonPlayer.playerCamera.eye.z > phase*levelDist) {
+			nextPhase();
+			System.out.println("phase up! " + phase);
+		}
 	}
 	
 	private void updateMovement() {
@@ -292,8 +302,22 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 				}
 			}
 			
+
+			Vector3D up = new Vector3D(0,1,0);
+			for(BillboardSprite sprite : world.sprites) {
+				
+				boolean willBeRendered = sprite.position.z > deathWall.position.z + deathWall.depth/2 - 20;
+				
+				willBeRendered = willBeRendered && sprite.position.z < firstPersonPlayer.playerCamera.eye.z + 200;
+				
+				if(willBeRendered)
+				{
+					sprite.lookAt(firstPersonPlayer.playerCamera.eye, up);
+					sprite.draw();
+				}
+			}
+			
 			bob.draw();
-			billboard.draw();
 			
 			//Death wall
 			

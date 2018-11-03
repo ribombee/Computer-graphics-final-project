@@ -13,7 +13,7 @@ public class DesktopLauncher {
 		config.width = 1920;  //experiment with
 		config.height = 1080;  //the window size
 		config.x = 0;
-		config.y = -1;
+		config.y = 0;
 		new LwjglApplication(new Maze3D(), config);
 	}
 }

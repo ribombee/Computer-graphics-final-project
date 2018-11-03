@@ -26,10 +26,11 @@ public class SpriteGraphic {
 		vertexBuffer.rewind();
 		
 		float[] UVArray = {
-			0f, 1f, //FRONT
 			1f, 1f,
 			1f, 0f,
-			0f, 0f
+			0f, 0f,
+			0f, 1f //FRONT
+			
 			};
 		
 		UVBuffer = BufferUtils.newFloatBuffer(8);

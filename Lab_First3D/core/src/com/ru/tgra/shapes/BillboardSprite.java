@@ -9,11 +9,12 @@ public class BillboardSprite {
 	Vector3D size;
 	Quaternion rotation;
 	
-	public BillboardSprite(Point3D position) {
+	public BillboardSprite(Point3D position, Vector3D size) {
 		if(image == null) {
-			image = new Texture(Gdx.files.internal("textures/base_texture.png"));
+			image = new Texture(Gdx.files.internal("textures/pillar_sprite.png"));
 		}
 		this.position = position;
+		this.size = size;
 		rotation = new Quaternion();
 	}
 	public void lookAt(Point3D origin, Vector3D up) {
@@ -30,7 +31,7 @@ public class BillboardSprite {
 		ModelMatrix.main.pushMatrix();
 		ModelMatrix.main.addTranslation(position.x, position.y, position.z);
 		ModelMatrix.main.addRotationQuaternion(rotation.x, rotation.y, rotation.z, rotation.w);
-		ModelMatrix.main.addScale(5,5,5);
+		ModelMatrix.main.addScale(size.x,size.y,size.z);
 		
 		Shader.mainShader.setModelMatrix(ModelMatrix.main.matrix);
 		//BoxGraphic.drawSolidCube(null,null);
