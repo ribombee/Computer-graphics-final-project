@@ -34,6 +34,7 @@ public class Player {
 		collisionBuffer = new ArrayList<MazeWall>(8);
 		collisionBuffer.ensureCapacity(8);
 		yRotation = 0;
+		Camera.activeCamera = playerCamera;
 	}
 	
 	public void moveToStart(Point3D start) {

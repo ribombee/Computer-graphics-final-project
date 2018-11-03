@@ -78,4 +78,8 @@ public class Vector3D {
 	{
 		return new Vector3D(P2.x-P1.x, P2.y-P1.y, P2.z-P1.z);
 	}
+	
+	public static float length(float x, float y, float z) {
+		return (float) Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2));
+	}
 }

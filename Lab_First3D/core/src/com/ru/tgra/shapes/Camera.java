@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.BufferUtils;
 
 public class Camera {
+	public static Camera activeCamera;
 	public Point3D eye;
 	public Vector3D u;
 	public Vector3D v;

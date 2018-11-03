@@ -38,7 +38,8 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 	private DirectionalLight dirLight;
 	private Skybox skybox;
 	Maze maze;
-	ModelTest test;
+	BillboardSprite billboard;
+	LookingBob bob;
 	@Override
 	public void create () {
 		
@@ -86,6 +87,8 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		SincGraphic.create(vertexPointer);
 		CoordFrameGraphic.create(vertexPointer);
 		FileModel.create(vertexPointer, normalPointer);
+		SpriteGraphic.create();
+		BobGraphic.create();
 
 		Gdx.gl.glClearColor(0.3f, 0.3f, 0.2f, 1);
 
@@ -122,7 +125,9 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 
 		skybox = new Skybox();
 
-		test = new ModelTest(new Point3D(firstPersonPlayer.playerCamera.eye.x, firstPersonPlayer.playerCamera.eye.y + 10, firstPersonPlayer.playerCamera.eye.z + 10));
+		billboard = new BillboardSprite(new Point3D(0, 60, 40));
+		
+		bob = new LookingBob(new Point3D(0, 40, 10));
 	}
 
 	private void input()
@@ -199,6 +204,9 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		
 		skybox.position.set(firstPersonPlayer.playerCamera.eye.x, firstPersonPlayer.playerCamera.eye.y, firstPersonPlayer.playerCamera.eye.z);
 		//test.position.set(firstPersonPlayer.playerCamera.eye.x, firstPersonPlayer.playerCamera.eye.y + 10, firstPersonPlayer.playerCamera.eye.z + 10);
+
+		billboard.lookAt(Camera.activeCamera.eye, new Vector3D(0,1,0));
+		bob.lookAt(Camera.activeCamera.eye, new Vector3D(0,1,0));
 	}
 	
 	private void display() {
@@ -206,6 +214,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 		for(int i = 0; i < 2; i++) {
 			if(i == 1) {
+				Camera.activeCamera = firstPersonPlayer.playerCamera;
 				Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 				Point3D cameraPosVec = firstPersonPlayer.playerCamera.eye;
 				shader.setEyePosition(cameraPosVec.x, cameraPosVec.y, cameraPosVec.z);
@@ -238,6 +247,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 				if(!orthographicCamEnabled) {
 					continue;
 				}
+				Camera.activeCamera = orthographicCam;
 				orthographicCam.eye.set(orthographicCam.eye.x, orthographicCam.eye.y, firstPersonPlayer.playerCamera.eye.z );
 				Gdx.gl.glViewport(Gdx.graphics.getWidth() * 3/4, Gdx.graphics.getHeight() / 4, Gdx.graphics.getWidth()/4, Gdx.graphics.getHeight() *3/4);
 				//Gdx.gl.glScissor(x, y, width, height);
@@ -255,8 +265,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 				ModelMatrix.main.popMatrix();
 			}
 
-
-			test.draw();
+			
 			//General terrain
 			for(MazeWall wall : world.blockList) {
 				if(wall == null) {
@@ -290,12 +299,14 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 				}
 			}
 			
+			bob.draw();
+			billboard.draw();
+			
 			//Death wall
 			
 			shader.setMaterialDiffuse(1,1,1,0.5f);	
 			shader.setModelMatrix(deathWall.getModelMatrix());
 			deathWall.draw();
-			
 		}
 	}
 

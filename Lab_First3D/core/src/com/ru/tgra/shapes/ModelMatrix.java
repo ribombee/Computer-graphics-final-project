@@ -99,4 +99,14 @@ public class ModelMatrix extends Matrix {
 
 		this.addTransformation(MMtmp);
 	}
+	
+	public void addRotationQuaternion(float x, float y, float z, float w)
+	{
+		MMtmp[0] = 1 - 2*y*y - 2*z*z; MMtmp[4] = 2*x*y - 2*w*z; MMtmp[8] = 2*x*z + 2*y*w; MMtmp[12] = 0;
+		MMtmp[1] = 2*x*y + 2*z*w; MMtmp[5] = 1 - 2*x*x - 2*z*z; MMtmp[9] = 2*y*z - 2*x*w; MMtmp[13] = 0;
+		MMtmp[2] = 2*x*z - 2*y*w; MMtmp[6] = 2*y*z + 2*x*w; MMtmp[10] = 1 - 2*x*x - 2*y*y; MMtmp[14] = 0;
+		MMtmp[3] = 0; MMtmp[7] = 0; MMtmp[11] = 0; MMtmp[15] = 1;
+
+		this.addTransformation(MMtmp);
+	}
 }

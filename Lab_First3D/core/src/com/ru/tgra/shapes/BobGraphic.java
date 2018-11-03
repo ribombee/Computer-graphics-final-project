@@ -23,18 +23,16 @@ import com.badlogic.gdx.graphics.g3d.model.data.ModelData;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.BufferUtils;
 
-public class ModelTest {
-	AssetManager assets = new AssetManager();
-	Model bobModel;
-	Texture tex;
+public class BobGraphic {
+	static AssetManager assets = new AssetManager();
+	static Model bobModel;
+	static Texture tex;
 
-	HashMap<Integer, CustomMesh> meshMap;
-	HashMap<String, ShortBuffer> meshPartIndices;
+	static HashMap<Integer, CustomMesh> meshMap;
+	static HashMap<String, ShortBuffer> meshPartIndices;
 	
-	Point3D position;
-	public ModelTest(Point3D pos)
+	public static void create()
 	{
-		position = pos;
 		assets.load("models/bob/bob.g3dj", Model.class);
 		assets.finishLoading();
 		bobModel = assets.get("models/bob/bob.g3dj");
@@ -47,7 +45,7 @@ public class ModelTest {
 		handleModel();
 	}
 	
-	private void handleModel() {
+	private static void handleModel() {
 		for(Node node : bobModel.nodes) {
 			//mesh.parts.first().material.id;
 			if(node.parts.size > 0) {
@@ -113,11 +111,7 @@ public class ModelTest {
 			}
 		}
 	}
-	public void draw() {
-		ModelMatrix.main.pushMatrix();
-		ModelMatrix.main.addTranslation(position.x, position.y, position.z);
-		ModelMatrix.main.addScale(50, 50, 50);
-		
+	public static void draw() {		
 		for(Node node : bobModel.nodes) {
 			if(node.parts.size > 0) {
 				ModelMatrix.main.pushMatrix();
@@ -142,6 +136,5 @@ public class ModelTest {
 				ModelMatrix.main.popMatrix();
 			}
 		}
-		ModelMatrix.main.popMatrix();
 	}
 }
