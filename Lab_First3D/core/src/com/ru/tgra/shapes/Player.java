@@ -155,13 +155,13 @@ public class Player {
 		
 		
 		
-		Comparator<MazeWall> playerDist = (MazeWall a, MazeWall b) -> {
+		/*Comparator<MazeWall> playerDist = (MazeWall a, MazeWall b) -> {
 			float aDist = new Vector3D(a.position.x - position.x, a.position.y - position.y, a.position.z - position.z).length();
 			float bDist = new Vector3D(b.position.x - position.x, b.position.y - position.y, b.position.z - position.z).length();
 		    return aDist >= bDist ? 1 : -1;
-		};
+		};*/
 		
-		collisionBuffer.sort(playerDist);
+		collisionBuffer.sort(new WallDistanceComparator());
 		for(MazeWall cube : collisionBuffer) {
 			if(collision(cube, speed)) {
 				//Resolve for Y-axis
@@ -181,6 +181,16 @@ public class Player {
 		return speed;
 	}
 	
+	class WallDistanceComparator implements Comparator<MazeWall>{
+
+		   public int compare(MazeWall a, MazeWall b){
+			   Point3D position = Player.this.playerCamera.eye;
+		       float aDist = new Vector3D(a.position.x - position.x, a.position.y - position.y, a.position.z - position.z).length();
+		       float bDist = new Vector3D(b.position.x - position.x, b.position.y - position.y, b.position.z - position.z).length();
+			   return aDist >= bDist ? 1 : -1;
+		   }
+
+	}
 	public void lookY(float angle) {
 		if(yRotation + angle < 90 && yRotation + angle > -90) {
 			yRotation += angle;
