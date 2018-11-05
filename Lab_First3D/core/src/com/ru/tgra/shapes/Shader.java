@@ -22,8 +22,6 @@ public class Shader {
 	private int uvLoc;
 	private int diffuseTextureLoc;
 	private int usesDiffuseTextureLoc;
-	private int specTextureLoc;
-	private int usesSpecularTextureLoc;
 
 	public static int modelMatrixLoc;
 	public static int viewMatrixLoc;
@@ -35,6 +33,10 @@ public class Shader {
 	private int materialSpecularLoc;
 	private int materialShineLoc;
 	private int eyePosLoc;
+	
+	private int fogColorLoc;
+	private int fogMinDistLoc;
+	private int fogMaxDistLoc;
 	
 	private int alphaLoc;
 	
@@ -79,8 +81,7 @@ public class Shader {
 
 		diffuseTextureLoc		= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_diffuseTexture");
 		usesDiffuseTextureLoc   = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_usesDiffuseTexture");
-		//specTextureLoc			= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_specularTexture");
-		//usesSpecularTextureLoc  = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_usesSpecularTexture");
+		System.out.println("test: " + diffuseTextureLoc);
 		
 		modelMatrixLoc			= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_modelMatrix");
 		viewMatrixLoc			= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_viewMatrix");
@@ -95,7 +96,9 @@ public class Shader {
 		renderingSkyboxLoc 		= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_renderingSkybox");
 		alphaLoc 				= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_alpha");
 		
-		
+		fogColorLoc				= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_fogColor");
+		fogMinDistLoc 			= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_fogStart");
+		fogMaxDistLoc			= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_fogEnd");
 		Gdx.gl.glUseProgram(renderingProgramID);
 		usingWorldShader = true;
 		mainShader = this;
@@ -209,21 +212,15 @@ public class Shader {
 		}
 	}
 	
-	public void setSpecularTexture(Texture tex)
-	{
-		if(tex == null)
-		{
-			//Gdx.gl.glUniform1i(usesSpecularTextureLoc, 0);	
-		}
-		else
-		{
-			//tex.bind(0);
-			//Gdx.gl.glUniform1i(specTextureLoc, 0);
-			//Gdx.gl.glUniform1i(usesSpecularTextureLoc, 1);	
-		}
-	}
-	
 	public void setAlpha(float alpha) {
 		Gdx.gl.glUniform1f(alphaLoc, alpha);
+	}
+	
+	public void setFogColor(float r, float g, float b) {
+		Gdx.gl.glUniform3f(fogColorLoc, r, g, b);
+	}
+	public void setFogDist(float near, float far) {
+		Gdx.gl.glUniform1f(fogMinDistLoc, near);
+		Gdx.gl.glUniform1f(fogMaxDistLoc, far);
 	}
 }

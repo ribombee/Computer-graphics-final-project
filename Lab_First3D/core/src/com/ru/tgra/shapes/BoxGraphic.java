@@ -126,7 +126,6 @@ public class BoxGraphic {
 
 	public static void drawSolidCube(Texture tex, Texture spectex) {
 
-		Shader.mainShader.setSpecularTexture(spectex);
 		Shader.mainShader.setDiffuseTexture(tex);
 		
 		Gdx.gl.glVertexAttribPointer(Shader.mainShader.getVertexPointer(), 3, GL20.GL_FLOAT, false, 0, vertexBuffer);

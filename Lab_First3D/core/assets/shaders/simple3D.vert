@@ -26,12 +26,17 @@ uniform vec4 u_materialDiffuse;
 uniform vec4 u_materialSpecular;
 uniform float u_materialShine;
 
+uniform float u_fogStart;
+uniform float u_fogEnd;
+
 varying vec4 v_diffuse;
 varying vec4 v_specular;
 
 varying vec4 v_light;
 
 varying vec2 v_uv;
+
+varying float v_fogRatio;
 
 struct pointLight  {
 	vec4 position;
@@ -128,6 +133,8 @@ void main()
 	v_light[3] = 1;
 	
 	position = u_viewMatrix * position;
+	
+	v_fogRatio = (length(position) - u_fogStart)/(u_fogEnd - u_fogStart);
 	
 	v_uv = a_uvpos;
 	gl_Position = u_projectionMatrix * position;

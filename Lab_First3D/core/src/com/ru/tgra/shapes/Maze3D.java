@@ -82,6 +82,8 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		Gdx.input.setCursorCatched(true);
 		shader = new Shader();
 		
+		shader.setFogColor(0.3f, 0.3f, 0.3f);
+		shader.setFogDist(10, 40);
 		world = new World(7,50);
 
 		pointLights = new ArrayList<PointLight>();
