@@ -138,10 +138,10 @@ void main()
 	position = u_viewMatrix * position;
 	
 	float posLength = length(position);
-	if(posLength < u_fogStart && u_fogRestrainLerp) {
+	if(posLength < u_fogStart && u_fogRestrainLerp == 1) {
 		v_fogRatio = 0.0;
 	}
-	else if(posLength > u_fogEnd && u_fogRestrainLerp) {
+	else if(posLength > u_fogEnd && u_fogRestrainLerp == 1) {
 		v_fogRatio = 1.0;
 	}
 	else {

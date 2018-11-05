@@ -70,7 +70,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		}
 		if(phase < 10)
 		{
-			deathWall.speed += 1.7;
+			deathWall.speed += 1;
 		}
 		world.nextPhase();
 	}
@@ -95,7 +95,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 	}
 	private void setupGame() {
 		phase = 0;
-		levelDist = 200;
+		levelDist = 300;
 		Gdx.gl.glEnable(GL20.GL_BLEND);
 		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
@@ -144,9 +144,8 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		
 		firstPersonPlayer.moveToStart(new Point3D(20,50,20));
 		firstPersonPlayer.playerCamera.LookAt(new Point3D(firstPersonPlayer.playerCamera.eye.x,firstPersonPlayer.playerCamera.eye.y,firstPersonPlayer.playerCamera.eye.z + 1), new Vector3D(0,1,0));
-		//firstPersonPlayer.move(new Vector3D(0,0,0), new ArrayList<MazeWall>());
 		
-		deathWall = new DeathWall(new Point3D(0,0,0),800, 400, 300, 5);
+		deathWall = new DeathWall(new Point3D(0,0,0),800, 400, 300, 10);
 		deathFloor = new MazeWall(new Point3D(0,-100,0), 5, 5, 5);
 
 		Point3D deathWallStart = new Point3D(world.blockWidth*world.width/2, 0, firstPersonPlayer.playerCamera.eye.z - deathWall.depth/2 - 50);
@@ -155,13 +154,11 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		orthographicCam = new Camera();
 
 		orthographicCam.OrthographicProjection3D(-20, 20, 40, -40, 2f, 400);
-		//orthographicCam.OrthographicProjection3D(-(world.blockDepth*8), (world.blockDepth*8), -(world.width*world.blockWidth), (world.width*world.blockWidth), 2f, 400);
 		orthographicCam.eye = new Point3D(deathWall.position.x, deathWall.position.y + deathWall.height/2 + 20, 0);
 		orthographicCam.LookAt(new Point3D(deathWall.position.x, deathWall.position.y + deathWall.height/2, 0), new Vector3D(0,0,-1));
 
 		skybox = new Skybox();
 
-		//bob = new LookingBob(new Point3D(0, 40, 10));
 	}
 
 	private void input()
