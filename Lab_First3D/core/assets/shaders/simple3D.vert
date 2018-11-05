@@ -29,6 +29,9 @@ uniform float u_materialShine;
 uniform float u_fogStart;
 uniform float u_fogEnd;
 
+//Colors turn out really cool when we don't restrain them, so we keep it in
+uniform int u_fogRestrainLerp;
+
 varying vec4 v_diffuse;
 varying vec4 v_specular;
 
@@ -134,7 +137,16 @@ void main()
 	
 	position = u_viewMatrix * position;
 	
-	v_fogRatio = (length(position) - u_fogStart)/(u_fogEnd - u_fogStart);
+	float posLength = length(position);
+	if(posLength < u_fogStart && u_fogRestrainLerp) {
+		v_fogRatio = 0.0;
+	}
+	else if(posLength > u_fogEnd && u_fogRestrainLerp) {
+		v_fogRatio = 1.0;
+	}
+	else {
+		v_fogRatio = (posLength - u_fogStart)/(u_fogEnd - u_fogStart);
+	}
 	
 	v_uv = a_uvpos;
 	gl_Position = u_projectionMatrix * position;

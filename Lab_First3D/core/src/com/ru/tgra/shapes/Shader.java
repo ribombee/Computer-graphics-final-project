@@ -37,6 +37,7 @@ public class Shader {
 	private int fogColorLoc;
 	private int fogMinDistLoc;
 	private int fogMaxDistLoc;
+	private int fogRestrainLerpLoc;
 	
 	private int alphaLoc;
 	
@@ -99,6 +100,8 @@ public class Shader {
 		fogColorLoc				= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_fogColor");
 		fogMinDistLoc 			= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_fogStart");
 		fogMaxDistLoc			= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_fogEnd");
+		fogRestrainLerpLoc		= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_fogRestrainLerp");
+		
 		Gdx.gl.glUseProgram(renderingProgramID);
 		usingWorldShader = true;
 		mainShader = this;
@@ -219,8 +222,14 @@ public class Shader {
 	public void setFogColor(float r, float g, float b) {
 		Gdx.gl.glUniform3f(fogColorLoc, r, g, b);
 	}
-	public void setFogDist(float near, float far) {
+	public void setFogDist(float near, float far, boolean restrain) {
 		Gdx.gl.glUniform1f(fogMinDistLoc, near);
 		Gdx.gl.glUniform1f(fogMaxDistLoc, far);
+		if(restrain) {
+			Gdx.gl.glUniform1i(fogRestrainLerpLoc, 1);
+		}
+		else {
+			Gdx.gl.glUniform1i(fogRestrainLerpLoc, 0);
+		}
 	}
 }

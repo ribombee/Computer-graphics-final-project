@@ -47,9 +47,30 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		if(phase == 0) {
 			restart();
 		}
+		if(phase == 1) {
+			shader.setFogColor(0.85f, 0.93f, 0.78f);
+		}
+		if(phase == 2) {
+			shader.setFogColor(0.94f, 0.82f, 0.79f);
+		}
+		if(phase == 3) {
+			shader.setFogColor(0.7f, 0.89f, 0.86f);
+		}
+		if(phase == 4) {
+			shader.setFogColor(0.85f, 0.6f, 0.5f);
+		}
+		if(phase == 5) {
+			shader.setFogColor(0.7f, 0.4f, 0.6f);
+		}
+		if(phase == 6) {
+			shader.setFogColor(0.6f, 0.6f, 0.6f);
+		}
+		if(phase == 7) {
+			shader.setFogColor(0.4f, 0.4f, 0.4f);
+		}
 		if(phase < 10)
 		{
-			deathWall.speed += 2;
+			deathWall.speed += 1.7;
 		}
 		world.nextPhase();
 	}
@@ -82,8 +103,6 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		Gdx.input.setCursorCatched(true);
 		shader = new Shader();
 		
-		shader.setFogColor(0.3f, 0.3f, 0.3f);
-		shader.setFogDist(10, 40);
 		world = new World(7,50);
 
 		pointLights = new ArrayList<PointLight>();
@@ -245,7 +264,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 				Point3D cameraPosVec = firstPersonPlayer.playerCamera.eye;
 				shader.setEyePosition(cameraPosVec.x, cameraPosVec.y, cameraPosVec.z);
 				shader.setProjectionMatrix(firstPersonPlayer.playerCamera.getProjectionMatrix());
-				shader.setViewMatrix(firstPersonPlayer.playerCamera.getViewMatrix());	
+				shader.setViewMatrix(firstPersonPlayer.playerCamera.getViewMatrix());
 				
 				skybox.draw();
 				
@@ -254,6 +273,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 				if(!orthographicCamEnabled) {
 					continue;
 				}
+				shader.setFogDist(0, 100000, true);
 				Camera.activeCamera = orthographicCam;
 				orthographicCam.eye.set(orthographicCam.eye.x, orthographicCam.eye.y, firstPersonPlayer.playerCamera.eye.z );
 				Gdx.gl.glViewport(Gdx.graphics.getWidth() * 3/4, Gdx.graphics.getHeight() / 4, Gdx.graphics.getWidth()/4, Gdx.graphics.getHeight() *3/4);
@@ -273,6 +293,27 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 				ModelMatrix.main.popMatrix();
 			}
 
+			//Death wall
+			shader.setMaterialDiffuse(1,1,1,0.5f);	
+			shader.setModelMatrix(deathWall.getModelMatrix());
+			deathWall.draw();
+			if(i == 1) {
+				if(phase == 6) {
+					shader.setFogDist(0, 150, false);
+				}
+				else if(phase == 7) {
+					shader.setFogDist(-10, 120, false);
+				}
+				else if(phase == 8) {
+					shader.setFogDist(-20, 80, false);
+				}
+				else if(phase > 8) {
+					shader.setFogDist(-50, 40, false);
+				}
+				else {
+					shader.setFogDist(10, 150, true);
+				}
+			}
 			
 			//General terrain
 			for(MazeWall wall : world.blockList) {
@@ -330,11 +371,6 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 					bob.draw();
 				}
 			}
-			//Death wall
-			
-			shader.setMaterialDiffuse(1,1,1,0.5f);	
-			shader.setModelMatrix(deathWall.getModelMatrix());
-			deathWall.draw();
 		}
 	}
 
