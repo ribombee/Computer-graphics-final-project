@@ -56,6 +56,7 @@ public class SpriteGraphic {
 	
 	public static void drawSprite(Texture tex) {
 		Shader.mainShader.setDiffuseTexture(tex);
+		Shader.mainShader.setMaterialDiffuse(1, 1, 1, 0);
 		
 		Gdx.gl.glVertexAttribPointer(Shader.mainShader.getVertexPointer(), 3, GL20.GL_FLOAT, false, 0, vertexBuffer);
 		Gdx.gl.glVertexAttribPointer(Shader.mainShader.getNormalPointer(), 3, GL20.GL_FLOAT, false, 0, normalBuffer);

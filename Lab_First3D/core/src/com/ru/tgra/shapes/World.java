@@ -95,13 +95,16 @@ public class World {
 			if(Math.random() <= 0.2f) {
 				int xPos = (int)(Math.random()*30 + + width/2 + 10);
 				int yPos = (int)(Math.random()*15) - 5;
-				BillboardSprite sprite = new BillboardSprite(new Point3D(xPos*blockWidth, yPos*blockHeight, (z + currentZGenerationIndex)*blockDepth), new Vector3D(6,20,1));
+				
+				int height = (int)(Math.random()*150 + 50);
+				BillboardSprite sprite = new BillboardSprite(new Point3D(xPos*blockWidth, yPos*blockHeight, (z + currentZGenerationIndex)*blockDepth), new Vector3D(6,height,1));
 				sprites.add(sprite);
 			}
 			if(Math.random() <= 0.2f) {
+				int height = (int)(Math.random()*150 + 50);
 				int xPos = (int)(Math.random()*30 + width/2 + 10);
 				int yPos = (int)(Math.random()*10);
-				BillboardSprite sprite = new BillboardSprite(new Point3D(-xPos*blockWidth, yPos*blockHeight, (z + currentZGenerationIndex)*blockDepth), new Vector3D(6,20,1));
+				BillboardSprite sprite = new BillboardSprite(new Point3D(-xPos*blockWidth, yPos*blockHeight, (z + currentZGenerationIndex)*blockDepth), new Vector3D(6,height,1));
 				sprites.add(sprite);
 			}
 			

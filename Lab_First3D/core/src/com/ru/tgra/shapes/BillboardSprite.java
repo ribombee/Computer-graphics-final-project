@@ -11,7 +11,7 @@ public class BillboardSprite {
 	
 	public BillboardSprite(Point3D position, Vector3D size) {
 		if(image == null) {
-			image = new Texture(Gdx.files.internal("textures/pillar_sprite.png"));
+			image = new Texture(Gdx.files.internal("textures/pillr.png"));
 		}
 		this.position = position;
 		this.size = size;
