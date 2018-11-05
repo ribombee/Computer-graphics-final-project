@@ -5,9 +5,11 @@ import com.badlogic.gdx.graphics.Texture;
 public class LookingBob {
 	Point3D position;
 	Texture texture;
+	float size;
 	float yawAngle, pitchAngle, rollAngle;
-	public LookingBob(Point3D position) {
+	public LookingBob(Point3D position, float s) {
 		this.position = position;
+		size = s;
 	}
 	public void lookAt(Point3D origin, Vector3D up) {
 		Vector3D direction = new Vector3D(origin.x - position.x, origin.y - position.y, origin.z - position.z);
@@ -28,7 +30,7 @@ public class LookingBob {
 		Quaternion testQuat = new Quaternion();
 		testQuat.setFromEulerAngles(-pitchAngle,0,0);
 		ModelMatrix.main.addRotationQuaternion(testQuat.x, testQuat.y, testQuat.z, testQuat.w);
-		ModelMatrix.main.addScale(50,50,50);
+		ModelMatrix.main.addScale(size, size, size);
 
 		Shader.mainShader.setModelMatrix(ModelMatrix.main.matrix);
 		BobGraphic.draw();

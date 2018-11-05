@@ -22,6 +22,8 @@ public class World {
 	
 	public ArrayList<BillboardSprite> sprites;
 	
+	public ArrayList<LookingBob> bobs;
+	
 	public int phase;
 	int heightMap[][];
 	private Perlin terrainNoise;
@@ -50,6 +52,7 @@ public class World {
 		blockList = new ArrayList<MazeWall>();
 		obstacles = new ArrayList<Obstacle>();
 		sprites = new ArrayList<BillboardSprite>();
+		bobs = new ArrayList<LookingBob>();
 		generateInitialHeightMap();
 	}
 	
@@ -57,6 +60,7 @@ public class World {
 	{
 		addAdditionalZ(depth);
 	}
+	
 	
 	private boolean obstacleCheck(int x, int z) {
 		
@@ -100,6 +104,19 @@ public class World {
 				BillboardSprite sprite = new BillboardSprite(new Point3D(-xPos*blockWidth, yPos*blockHeight, (z + currentZGenerationIndex)*blockDepth), new Vector3D(6,20,1));
 				sprites.add(sprite);
 			}
+			
+			if(Math.random() <= 0.02f) {
+				int yBob = 20;
+				int xBob1 = 15 * blockWidth;
+				int xBob2 = -15 * blockWidth;
+				int zBob = (currentZGenerationIndex + z) * blockDepth;
+				
+				LookingBob leftBob = new LookingBob(new Point3D(xBob2, yBob, zBob), 500);
+				LookingBob rightBob = new LookingBob(new Point3D(xBob1, yBob, zBob), 500);
+				
+				bobs.add(leftBob);
+				bobs.add(rightBob);
+			}
 		}
 		for(int x = 0; x < width; x++)
 		{
@@ -112,8 +129,8 @@ public class World {
 					{
 						MazeWall stillBlock = new MazeWall(new Point3D(x*blockWidth, i*blockHeight, z*blockDepth), blockWidth, blockHeight, blockDepth);
 						stillBlock.setColor(0.3f, 0.5f, 0.2f);
-						if(i + 1 == heightNoise && phase % 3 != 2) {
-							stillBlock.useTopTexture();
+						if(i + 1 == heightNoise) {
+							stillBlock.useTopTexture(phase);
 						}
 						blockList.add(stillBlock);
 					}
@@ -124,8 +141,8 @@ public class World {
 					{
 						MazeWall stillBlock = new MazeWall(new Point3D(x*blockWidth, i*blockHeight, z*blockDepth), blockWidth, blockHeight, blockDepth);
 						stillBlock.setColor(0.3f, 0.5f, 0.2f);
-						if(i + 1 == heightNoise && phase % 3 != 2) {
-							stillBlock.useTopTexture();
+						if(i + 1 == heightNoise) {
+							stillBlock.useTopTexture(phase);
 						}
 						blockList.add(stillBlock);
 					}

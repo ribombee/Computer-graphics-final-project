@@ -12,7 +12,10 @@ public class MazeWall {
 	protected Texture specTex = null;
 	
 	private static Texture baseTex = null;
-	private static Texture topTex = null;
+	private static Texture starTopTex = null;
+	private static Texture snailTopTex = null;
+	private static Texture frostingTopTex = null;
+	private static Texture flowerTopTex = null;
 	private static Texture pillarTex = null;
 	
 	public float width;
@@ -37,7 +40,10 @@ public class MazeWall {
 		{
 			//Texture loading
 			baseTex = new Texture(Gdx.files.internal("textures/base_texture.png"));
-			topTex = new Texture(Gdx.files.internal("textures/top_texture.png"));
+			starTopTex = new Texture(Gdx.files.internal("textures/star_top.png"));
+			snailTopTex = new Texture(Gdx.files.internal("textures/snail_top.png"));
+			frostingTopTex = new Texture(Gdx.files.internal("textures/frosting_top.png"));
+			flowerTopTex = new Texture(Gdx.files.internal("textures/flowery_top.png"));
 			pillarTex = new Texture(Gdx.files.internal("textures/pillar_texture.png"));
 		}
 		tex = baseTex;
@@ -56,9 +62,31 @@ public class MazeWall {
 		moving = false;
 	}
 	
-	public void useTopTexture() {
-		tex = topTex;
-		specTex = topTex;
+	public void useTopTexture(int phaseNumber) {
+		
+		int textureNumber = phaseNumber%5;
+		switch (textureNumber) {
+		case 0:
+			tex = starTopTex;
+			specTex = starTopTex;
+			break;
+		case 1:
+			tex = frostingTopTex;
+			specTex = frostingTopTex;
+			break;
+		case 2:
+			tex = baseTex;
+			specTex = baseTex;
+			break;
+		case 3:
+			tex = snailTopTex;
+			specTex = snailTopTex;
+			break;
+		case 4:
+			tex = flowerTopTex;
+			specTex = flowerTopTex;
+			break;
+		}
 	}
 	
 	public void usePillarTexture() {
@@ -72,8 +100,11 @@ public class MazeWall {
 		{
 			//Texture loading
 			baseTex = new Texture(Gdx.files.internal("textures/base_texture.png"));
+			starTopTex = new Texture(Gdx.files.internal("textures/star_top.png"));
+			snailTopTex = new Texture(Gdx.files.internal("textures/snail_top.png"));
+			frostingTopTex = new Texture(Gdx.files.internal("textures/frosting_top.png"));
+			flowerTopTex = new Texture(Gdx.files.internal("textures/flowery_top.png"));
 			pillarTex = new Texture(Gdx.files.internal("textures/pillar_texture.png"));
-			topTex = new Texture(Gdx.files.internal("textures/top_texture.png"));
 		}
 		tex = baseTex;
 		specTex = baseTex;

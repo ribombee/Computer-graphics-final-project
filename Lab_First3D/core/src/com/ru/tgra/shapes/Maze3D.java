@@ -140,7 +140,7 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 
 		skybox = new Skybox();
 
-		bob = new LookingBob(new Point3D(0, 40, 10));
+		//bob = new LookingBob(new Point3D(0, 40, 10));
 	}
 
 	private void input()
@@ -193,7 +193,10 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 		skybox.position.set(firstPersonPlayer.playerCamera.eye.x, firstPersonPlayer.playerCamera.eye.y, firstPersonPlayer.playerCamera.eye.z);
 		deathFloor.position.set(firstPersonPlayer.playerCamera.eye.x, deathFloor.position.y, firstPersonPlayer.playerCamera.eye.z);
 
-		bob.lookAt(Camera.activeCamera.eye, new Vector3D(0,1,0));
+		for(LookingBob bob : world.bobs)
+		{
+			bob.lookAt(Camera.activeCamera.eye, new Vector3D(0,1,0));
+		}
 		
 		if(firstPersonPlayer.playerCamera.eye.z > phase*levelDist) {
 			nextPhase();
@@ -317,8 +320,14 @@ public class Maze3D extends ApplicationAdapter implements InputProcessor {
 				}
 			}
 			
-			bob.draw();
-			
+			for(LookingBob bob : world.bobs)
+			{
+				boolean willBeRendered = bob.position.z > deathWall.position.z + deathWall.depth/2 - 20;
+				if(willBeRendered)
+				{
+					bob.draw();
+				}
+			}
 			//Death wall
 			
 			shader.setMaterialDiffuse(1,1,1,0.5f);	
